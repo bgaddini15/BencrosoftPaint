@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.bencrosoftpaint.HelloController">
+   <top>
+       <VBox prefHeight="114.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+           <MenuBar>
+               <Menu mnemonicParsing="false" text="File">
+                   <MenuItem accelerator="Shortcut + O" mnemonicParsing="false" onAction="#handleOpenItem" text="Open..." />
+                   <MenuItem accelerator="Shortcut + S" mnemonicParsing="false" onAction="#handleSaveItem" text="Save" />
+                   <MenuItem accelerator="Shortcut + Shift + S" mnemonicParsing="false" onAction="#handleSaveAsItem" text="Save As..." />
+               <MenuItem accelerator="Shortcut + N" mnemonicParsing="false" onAction="#createNewTab" text="New Tab" />
+               </Menu>
+               <Menu mnemonicParsing="false" text="Edit">
+               <MenuItem mnemonicParsing="false" onAction="#resizeCanvas" text="Resize Canvas..." />
+               <MenuItem mnemonicParsing="false" onAction="#clearCanvas" text="Clear Canvas" />
+                   <MenuItem accelerator="Shortcut +C" mnemonicParsing="false" onAction="#handleCopy" text="Copy" />
+                   <MenuItem accelerator="Shortcut +X" mnemonicParsing="false" onAction="#handleCut" text="Cut" />
+                   <MenuItem accelerator="Shortcut +V" mnemonicParsing="false" onAction="#handlePaste" text="Paste" />
+               <MenuItem accelerator="Delete" mnemonicParsing="false" onAction="#handleDelete" text="Delete" />
+                   <MenuItem accelerator="Shortcut +Z" mnemonicParsing="false" onAction="#handleUndo" text="Undo" />
+                   <MenuItem accelerator="Shortcut +Y" mnemonicParsing="false" onAction="#handleRedo" text="Redo" />
+               </Menu>
+               <Menu mnemonicParsing="false" text="Help">
+                   <MenuItem mnemonicParsing="false" onAction="#handleAboutItem" text="About" />
+               <MenuItem mnemonicParsing="false" onAction="#handleHelpItem" text="Help" />
+               </Menu>
+           </MenuBar>
+           <ToolBar prefHeight="82.0" prefWidth="1400.0">
+               <VBox prefHeight="70.0" prefWidth="100.0">
+                   <FlowPane prefHeight="200.0" prefWidth="200.0">
+                       <ToggleButton fx:id="penToggle" mnemonicParsing="false" onAction="#handlePressed" text="Pen">
+                           <tooltip>
+                               <Tooltip text="Pen" />
+                           </tooltip>
+                           <FlowPane.margin>
+                               <Insets bottom="2.0" right="2.0" />
+                           </FlowPane.margin>
+                       </ToggleButton>
+                       <ToggleButton fx:id="eraseToggle" mnemonicParsing="false" onAction="#handlePressed" text="Erase">
+                           <tooltip>
+                               <Tooltip text="Erase" />
+                           </tooltip>
+                           <FlowPane.margin>
+                               <Insets bottom="2.0" right="2.0" />
+                           </FlowPane.margin>
+                       </ToggleButton>
+                       <ToggleButton fx:id="textToggle" mnemonicParsing="false" onAction="#handlePressed" textAlignment="CENTER">
+                           <graphic>
+                               <ImageView fitHeight="20.0" fitWidth="20.0">
+                                   <Image url="@textIcon.png">
+                                   </Image>
+                               </ImageView>
+                           </graphic>
+                           <tooltip>
+                               <Tooltip text="Text" />
+                           </tooltip>
+                           <FlowPane.margin>
+                               <Insets right="2.0" />
+                           </FlowPane.margin>
+                       </ToggleButton>
+                       <ToggleButton fx:id="selectToggle" mnemonicParsing="false" onAction="#handlePressed" text="Select">
+                           <tooltip>
+                               <Tooltip text="Select" />
+                           </tooltip>
+                           <FlowPane.margin>
+                               <Insets right="2.0" />
+                           </FlowPane.margin>
+                       </ToggleButton>
+                   </FlowPane>
+                   <Text fill="#464646" strokeType="OUTSIDE" strokeWidth="0.0" text="Tools" translateX="40.0">
+                       <font>
+                           <Font size="10.0" />
+                       </font>
+                   </Text>
+               </VBox>
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="9.0" />
+               <VBox prefHeight="70.0" prefWidth="209.0">
+                   <ScrollPane hbarPolicy="NEVER" prefHeight="52.0" prefWidth="209.0">
+                       <FlowPane prefHeight="200.0" prefWidth="200.0">
+                           <ToggleButton fx:id="lineToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
+                               <graphic>
+                                   <ImageView fitHeight="20.0" fitWidth="20.0">
+                                       <Image url="@lineIcon.png">
+                                       </Image>
+                                   </ImageView>
+                               </graphic>
+                               <tooltip>
+                                   <Tooltip text="Line" />
+                               </tooltip>
+                               <FlowPane.margin>
+                                   <Insets bottom="2.0" right="2.0" top="1.0" />
+                               </FlowPane.margin>
+                           </ToggleButton>
+                           <ToggleButton fx:id="rectToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
+                               <graphic>
+                                   <ImageView fitHeight="20.0" fitWidth="20.0">
+                                       <Image url="@rectangleIcon.png">
+                                       </Image>
+                                   </ImageView>
+                               </graphic>
+                               <tooltip>
+                                   <Tooltip text="Rectangle" />
+                               </tooltip>
+                               <FlowPane.margin>
+                                   <Insets bottom="2.0" right="2.0" top="1.0" />
+                               </FlowPane.margin>
+                           </ToggleButton>
+                           <ToggleButton fx:id="squareToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
+                               <graphic>
+                                   <ImageView fitHeight="20.0" fitWidth="20.0">
+                                       <Image url="@squareIcon.png">
+                                       </Image>
+                                   </ImageView>
+                               </graphic>
+                               <tooltip>
+                                   <Tooltip text="Square" />
+                               </tooltip>
+                               <FlowPane.margin>
+                                   <Insets bottom="2.0" right="2.0" top="1.0" />
+                               </FlowPane.margin>
+                           </ToggleButton>
+                           <ToggleButton fx:id="triangleToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
+                               <graphic>
+                                   <ImageView fitHeight="20.0" fitWidth="20.0">
+                                       <Image url="@triangleIcon.png">
+                                       </Image>
+                                   </ImageView>
+                               </graphic>
+                               <tooltip>
+                                   <Tooltip text="Triangle" />
+                               </tooltip>
+                               <FlowPane.margin>
+                                   <Insets bottom="2.0" right="2.0" top="1.0" />
+                               </FlowPane.margin>
+                           </ToggleButton>
+                           <ToggleButton fx:id="rTriangleToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
+                               <graphic>
+                                   <ImageView fitHeight="20.0" fitWidth="20.0">
+                                       <Image url="@rightTriangleIcon.png">
+                                       </Image>
+                                   </ImageView>
+                               </graphic>
+                               <tooltip>
+                                   <Tooltip text="Right Triangle" />
+                               </tooltip>
+                               <FlowPane.margin>
+                                   <Insets bottom="2.0" right="2.0" top="1.0" />
+                               </FlowPane.margin>
+                           </ToggleButton>
+                           <ToggleButton fx:id="ovalToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
+                               <graphic>
+                                   <ImageView fitHeight="20.0" fitWidth="20.0">
+                                       <Image url="@ovalIcon.png">
+                                       </Image>
+                                   </ImageView>
+                               </graphic>
+                               <tooltip>
+                                   <Tooltip text="Oval" />
+                               </tooltip>
+                               <FlowPane.margin>
+                                   <Insets bottom="2.0" right="2.0" top="1.0" />
+                               </FlowPane.margin>
+                           </ToggleButton>
+                           <ToggleButton fx:id="circleToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
+                               <graphic>
+                                   <ImageView fitHeight="20.0" fitWidth="20.0">
+                                       <Image url="@circleIcon.png">
+                                       </Image>
+                                   </ImageView>
+                               </graphic>
+                               <tooltip>
+                                   <Tooltip text="Circle" />
+                               </tooltip>
+                               <FlowPane.margin>
+                                   <Insets bottom="2.0" right="2.0" top="1.0" />
+                               </FlowPane.margin>
+                           </ToggleButton>
+                           <ToggleButton fx:id="rArrowToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
+                               <graphic>
+                                   <ImageView fitHeight="20.0" fitWidth="20.0">
+                                       <Image url="@rightArrowIcon.png">
+                                       </Image>
+                                   </ImageView>
+                               </graphic>
+                               <tooltip>
+                                   <Tooltip text="Right Arrow" />
+                               </tooltip>
+                               <FlowPane.margin>
+                                   <Insets bottom="2.0" right="2.0" top="1.0" />
+                               </FlowPane.margin>
+                           </ToggleButton>
+                           <ToggleButton fx:id="lArrowToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
+                               <graphic>
+                                   <ImageView fitHeight="20.0" fitWidth="20.0">
+                                       <Image url="@leftArrowIcon.png">
+                                       </Image>
+                                   </ImageView>
+                               </graphic>
+                               <tooltip>
+                                   <Tooltip text="Left Arrow" />
+                               </tooltip>
+                               <FlowPane.margin>
+                                   <Insets bottom="2.0" right="2.0" top="1.0" />
+                               </FlowPane.margin>
+                           </ToggleButton>
+                           <ToggleButton fx:id="uArrowToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
+                               <graphic>
+                                   <ImageView fitHeight="20.0" fitWidth="20.0">
+                                       <Image url="@upArrowIcon.png">
+                                       </Image>
+                                   </ImageView>
+                               </graphic>
+                               <tooltip>
+                                   <Tooltip text="Up Arrow" />
+                               </tooltip>
+                               <FlowPane.margin>
+                                   <Insets bottom="2.0" right="2.0" top="1.0" />
+                               </FlowPane.margin>
+                           </ToggleButton>
+                           <ToggleButton fx:id="dArrowToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
+                               <graphic>
+                                   <ImageView fitHeight="20.0" fitWidth="20.0">
+                                       <Image url="@downArrowIcon.png">
+                                       </Image>
+                                   </ImageView>
+                               </graphic>
+                               <tooltip>
+                                   <Tooltip text="Down Arrow" />
+                               </tooltip>
+                               <FlowPane.margin>
+                                   <Insets bottom="2.0" right="2.0" top="1.0" />
+                               </FlowPane.margin>
+                           </ToggleButton>
+                           <ToggleButton fx:id="polygonToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
+                               <graphic>
+                                   <ImageView fitHeight="20.0" fitWidth="20.0">
+                                       <Image url="@polygonIcon.png">
+                                       </Image>
+                                   </ImageView>
+                               </graphic>
+                               <tooltip>
+                                   <Tooltip text="Polygon" />
+                               </tooltip>
+                               <FlowPane.margin>
+                                   <Insets bottom="2.0" right="2.0" top="1.0" />
+                               </FlowPane.margin>
+                           </ToggleButton>
+                           <ToggleButton fx:id="trapezoidToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
+                               <graphic>
+                                   <ImageView fitHeight="20.0" fitWidth="20.0">
+                                       <Image url="@trapezoidIcon.png">
+                                       </Image>
+                                   </ImageView>
+                               </graphic>
+                               <tooltip>
+                                   <Tooltip text="Trapezoid" />
+                               </tooltip>
+                               <FlowPane.margin>
+                                   <Insets bottom="2.0" right="2.0" top="1.0" />
+                               </FlowPane.margin>
+                           </ToggleButton>
+                       </FlowPane>
+                   </ScrollPane>
+                   <Text fill="#464646" strokeType="OUTSIDE" strokeWidth="0.0" text="Shapes" textAlignment="CENTER" textOrigin="BOTTOM" translateX="90.0" VBox.vgrow="NEVER">
+                       <font>
+                           <Font size="10.0" />
+                       </font>
+                       <VBox.margin>
+                           <Insets top="5.0" />
+                       </VBox.margin>
+                   </Text>
+               </VBox>
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="9.0" />
+            <ToggleButton fx:id="dashesToggle" mnemonicParsing="false" onAction="#handleDash" text="Dashes" />
+            <ToggleButton fx:id="filledToggle" mnemonicParsing="false" onAction="#handleDash" text="Filled" />
+
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="9.0" />
+            <Label text="Line Size" />
+            <Slider fx:id="sizeSlider" min="1.0" onMouseClicked="#handleSlider" onMouseDragged="#handleSlider" value="1.0" />
+            <Text fx:id="lineWidthText" strokeType="OUTSIDE" strokeWidth="0.0" text="1px" />
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="9.0" />
+               <VBox prefHeight="70.0" prefWidth="125.0">
+                   <ColorPicker fx:id="colorChooser" prefWidth="125.0">
+                       <value>
+                           <Color />
+                       </value>
+                       <VBox.margin>
+                           <Insets top="20.0" />
+                       </VBox.margin>
+                   </ColorPicker>
+                   <Text fill="#464646" strokeType="OUTSIDE" strokeWidth="0.0" text="Color" textAlignment="CENTER" translateX="50.0" translateY="10.0">
+                       <font>
+                           <Font size="10.0" />
+                       </font>
+                   </Text>
+               </VBox>
+           </ToolBar>
+       </VBox>
+   </top>
+   <center>
+        <TabPane fx:id="tabPane" minHeight="-Infinity" prefHeight="29.0" prefWidth="1400.0" tabClosingPolicy="ALL_TABS" BorderPane.alignment="CENTER">
+            <Tab onSelectionChanged="#switchTabs" text="Untitled Tab 1">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                   <StackPane fx:id="stackPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="1200.0">
+                       <Canvas fx:id="openCanvas" height="550.0" width="1200.0">
+                          <cursor>
+                              <Cursor fx:constant="CROSSHAIR" />
+                          </cursor>
+                       </Canvas>
+                       <Canvas fx:id="openTempCanvas" height="550.0" width="1200.0">
+                          <cursor>
+                              <Cursor fx:constant="CROSSHAIR" />
+                          </cursor>
+                       </Canvas>
+                   </StackPane>
+               </children>
+            </AnchorPane>
+            </Tab>
+        </TabPane>
+   </center>
+</BorderPane>
