@@ -527,6 +527,7 @@ public class HelloController {
                 }
             }
 
+            // If a region has been selected, draws the selected region to the canvas at the location of the mouse
             if (selected){
                 selected = false;
                 gc.drawImage(selectedImage, event.getX(), event.getY());
@@ -534,17 +535,24 @@ public class HelloController {
 
             // Special actions performed with the Select feature
             if (selectToggle.isSelected()){
+                // Determines new coordinates of the selected region
                 regionEndX = event.getX();
                 regionEndY = event.getY();
+                initialX = event.getX();
+                initialY = event.getY();
+
+                // Displays the bounding box on the screen
                 changeCanvas(tempGC, event);
+
+                // Saves the selected region as a writable image
                 Rectangle2D viewPort = new Rectangle2D(startX, startY, regionEndX - startX, regionEndY - startY);
                 SnapshotParameters params = new SnapshotParameters();
                 params.setViewport(viewPort);
                 selectedImage = canvas.snapshot(params, null);
+
+                // Handles boolean values
                 selected = true;
                 selectToggle.setSelected(false);
-                initialX = event.getX();
-                initialY = event.getY();
             }
             else {
                 changeCanvas(gc, event);
@@ -578,11 +586,16 @@ public class HelloController {
             }
             else changeCanvas(tempGC, event);
 
+            // If a region has been selected...
             if (selected){
+                // Shows the selected region actively moving
                 tempGC.clearRect(startX, startY, regionEndX - startX, regionEndY - startY);
                 tempGC.drawImage(selectedImage, event.getX(), event.getY());
+
+                // Clears the original location of the selected region
                 gc.clearRect(startX, startY, initialX - startX, initialY - startY);
 
+                // Stores the new position of the selected region in the temp canvas
                 regionEndX = startX + event.getX();
                 regionEndY = startY + event.getY();
                 regionStartX = event.getX();
@@ -592,6 +605,7 @@ public class HelloController {
         });
 
         tempCanvas.setOnMouseMoved(event -> {
+            // Displays the width and color of the pen/eraser over the cursor even when no draw is being performed
             if (penToggle.isSelected() || eraseToggle.isSelected()){
                 tempGC.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
                 SetGC(tempGC);
@@ -649,6 +663,7 @@ public class HelloController {
             drawer.drawText(gc, startX, startY, event.getX(), event.getY(), paintText, filledToggle.isSelected());
         }
         else if (selectToggle.isSelected()){
+            // Uses a light gray rectangle to display the selected region
             gc.setStroke(Color.LIGHTGRAY);
             gc.setLineDashes(3);
             gc.setLineWidth(2);
