@@ -1,0 +1,128 @@
+Ben Gaddini's Pain(t) Version 0.4.0 - 9/20/2024
+
+New features:
+*Added shapes:
+    *Right triangle
+    *Left arrow
+    *Up arrow
+    *Down arrow
+    *Trapezoid
+    *Regular polygon of number of sides specified by user
+*Ability to draw a filled-in shape rather than just a shape outline
+*Ability to add text-input to the canvas
+*Ability to undo and redo actions
+*Ability to clear the canvas
+*Ability to select a portion of the image:
+    *Cut, copy, and paste selected region
+    *Move selected region with mouse
+    *Erase selected region
+*Different tabs allow for unique workspaces to be open at different times
+    *Create a new tab
+    *Close an open tab
+*Fixed background color of canvas when resizing
+*When in pen or erase mode, the cursor shows the size and color of the pen
+
+Known issues:
+*For pen tool, undo needs to be pressed twice to work after the first stroke
+*Undo/redo slowly blurs the image every time it is used
+*Opened images still appear grainy
+*User is not able to specify location of the pasted image
+*New tab canvases must be first clicked without any operation selected to work
+
+Expected next features:
+*Auto save files after a certain period of time
+*Ability to have different fill and border colors of shapes
+*Ability to draw using a rainbow pen (color changes as you draw)
+*Ability to change the font of the drawn text
+*Ability to reposition a pasted image
+*Incorporation of a web server to present one of the open images
+
+-------------------------------------------------------------------------------------------------------------------
+
+Ben Gaddini's Pain(t) Version 0.3.0 - 9/16/2024
+
+New features:
+*Ability to draw shapes including:
+    *Line
+    *Rectangle
+    *Square
+    *Triangle
+    *Oval
+    *Circle
+    *Arrow pointing right
+*Shapes are drawn in real-time ("live draw")
+*Ability to erase
+*Icons and tooltips used to represent shape functions
+*Switched checkboxes to toggle buttons
+*Display pixel size of line width
+*Ability to resize the canvas
+*Ability to use a dashed outline of the shapes
+*Program warns you if you are about to save without closing (only if edits have been made)
+*About dialog box now has a scroll bar
+*Changed the background of the window so the user knows where the canvas is
+*Smoothened the pen tool
+*The pen tool can be disabled
+*Only one drawing tool can be active at once
+*Added icon to window
+
+Known issues:
+*Fill button currently has no functionality
+*When the canvas is resized, it's background is gray, not white
+*Opened images still appear grainy
+*Tabs do not work
+
+Expected next features:
+*Ability to undo/redo
+*Ability to copy/paste sections of the canvas
+*Additional shapes
+*Ability to draw filled-in shapes
+*Ability to add text to the canvas
+*Ability to clear the canvas
+*Allow user to have different images open in different tabs
+
+-------------------------------------------------------------------------------------------------------------------
+
+Ben Gaddini's Pain(t) Version 0.2.0 - 9/06/2024
+
+New features:
+*Improved GUI with menu and tool bars replacing the buttons
+*Ability to draw using the mouse
+*Ability to change the line width of the pen
+*Ability to change the color of the pen
+*Keyboard shortcuts for Open, Save, and Save As functions
+*Added About and Help windows that provide information to the user
+*Added support for .bmp files
+*Removed support for .gif files
+
+Known issues:
+*Drawn line does not look smooth (the drawn rectangle seemingly rotates, causing spikes and juts)
+*Loaded images appear grainy
+*The Draw check box only works once. Once it is selected, even if it is unselected, the user can still draw
+*Erase check box has no functionality
+
+Expected next features:
+*Implement ability to erase
+*Draw a line shape (different from a mouse stroke)
+*Draw a rectangle shape
+*Draw a circle shape
+*Smoothen the drawn line
+*Ability to disable draw functionality
+
+-------------------------------------------------------------------------------------------------------------------
+
+Ben Gaddini's Pain(t) Version 0.1.0 - 8/30/2024
+
+New features:
+*Ability to display a PNG, JPEG, or GIF image from a file location
+*Ability to save the loaded image as a new file of type PNG, JPEG, or GIF
+*Ability to save loaded image data over the loaded image (no new file created)
+
+Known issues:
+*GUI layout is unattractive
+*Trying to save a PNG or JPEG as a GIF causes errors
+
+Expected next features:
+*Add menu bar for buttons
+*Implement ability to draw over image and save changes
+*Prevent user from trying to save a PNG or JPEG as a GIF
+*Create color picker menu
