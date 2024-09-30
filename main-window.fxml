@@ -1,33 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.Cursor?>
-<?import javafx.scene.canvas.Canvas?>
-<?import javafx.scene.control.ColorPicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.Slider?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.control.ToolBar?>
-<?import javafx.scene.control.Tooltip?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.FlowPane?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.paint.Color?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
 
-<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.bencrosoftpaint.HelloController">
+<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.bencrosoftpaint.HelloController">
    <top>
        <VBox prefHeight="114.0" prefWidth="600.0" BorderPane.alignment="CENTER">
            <MenuBar>
@@ -36,6 +18,7 @@
                    <MenuItem accelerator="Shortcut + S" mnemonicParsing="false" onAction="#handleSaveItem" text="Save" />
                    <MenuItem accelerator="Shortcut + Shift + S" mnemonicParsing="false" onAction="#handleSaveAsItem" text="Save As..." />
                <MenuItem accelerator="Shortcut + N" mnemonicParsing="false" onAction="#createNewTab" text="New Tab" />
+               <MenuItem mnemonicParsing="false" onAction="#handleUpload" text="Upload" />
                </Menu>
                <Menu mnemonicParsing="false" text="Edit">
                <MenuItem mnemonicParsing="false" onAction="#resizeCanvas" text="Resize Canvas..." />
@@ -321,28 +304,28 @@
                        </font>
                    </Text>
                </VBox>
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="9.0" />
+            <CheckBox fx:id="autoSaveToggle" mnemonicParsing="false" onAction="#enableAutoSave" text="AutoSave" />
            </ToolBar>
        </VBox>
    </top>
    <center>
         <TabPane fx:id="tabPane" minHeight="-Infinity" prefHeight="29.0" prefWidth="1400.0" tabClosingPolicy="ALL_TABS" BorderPane.alignment="CENTER">
-            <Tab onSelectionChanged="#switchTabs" text="Untitled Tab 1">
+            <Tab onSelectionChanged="#switchTabs" text="Untitled Tab">
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-               <children>
-                   <StackPane fx:id="stackPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="1200.0">
-                       <Canvas fx:id="openCanvas" height="550.0" width="1200.0">
-                          <cursor>
-                              <Cursor fx:constant="CROSSHAIR" />
-                          </cursor>
-                       </Canvas>
-                       <Canvas fx:id="openTempCanvas" height="550.0" width="1200.0">
-                          <cursor>
-                              <Cursor fx:constant="CROSSHAIR" />
-                          </cursor>
-                       </Canvas>
-                   </StackPane>
-               </children>
-            </AnchorPane>
+                    <StackPane fx:id="stackPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="1200.0">
+                        <Canvas fx:id="openCanvas" height="550.0" width="1200.0">
+                            <cursor>
+                                <Cursor fx:constant="CROSSHAIR" />
+                            </cursor>
+                        </Canvas>
+                        <Canvas fx:id="openTempCanvas" height="550.0" width="1200.0">
+                            <cursor>
+                                <Cursor fx:constant="CROSSHAIR" />
+                            </cursor>
+                        </Canvas>
+                    </StackPane>
+                </AnchorPane>
             </Tab>
         </TabPane>
    </center>
