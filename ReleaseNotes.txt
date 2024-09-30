@@ -6,7 +6,8 @@ New features:
 *User can enable and disable auto save
 *User is warned about risks of saving image as new file type
 *The current image is uploaded to a web server whenever it is saved
-*Added unit testing and JavaDocs
+*Added JavaDocs commenting to some methods
+*Added unit testing of paint text and num sides
 
 Known issues:
 *Whenever an image is written to the canvas, it gets blurrier
