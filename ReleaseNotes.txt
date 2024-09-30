@@ -1,3 +1,29 @@
+Ben Gaddini's Pain(t) Version 0.5.0 - 9/29/2024
+
+New features:
+*Fixed issue where new tab canvases must be first clicked without any operation selected to work
+*Implemented auto saving of image
+*User can enable and disable auto save
+*User is warned about risks of saving image as new file type
+*The current image is uploaded to a web server whenever it is saved
+*Added unit testing and JavaDocs
+
+Known issues:
+*Whenever an image is written to the canvas, it gets blurrier
+*User is not able to specify location of pasted image
+*Saving images in different tabs sometimes does not work correctly
+
+Expected next features:
+*Ability to draw a star
+*Ability to rotate a selection of the canvas
+*Ability to move a shape after drawing it
+*Ability to move the pasted image
+*Ability to change the font of the drawn text
+*Ability to use a rainbow pen
+*Save a log of user's actions
+
+-------------------------------------------------------------------------------------------------------------------
+
 Ben Gaddini's Pain(t) Version 0.4.0 - 9/20/2024
 
 New features:
