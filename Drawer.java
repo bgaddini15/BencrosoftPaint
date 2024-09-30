@@ -319,6 +319,5 @@ public class Drawer {
                 gc.strokeText(text, startX, endY);
             }
         }
-
     }
 }

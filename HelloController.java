@@ -1,5 +1,8 @@
 package com.example.bencrosoftpaint;
 
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -19,11 +22,16 @@ import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.text.Text;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Objects;
 import java.util.Stack;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class HelloController {
     Drawer drawer = new Drawer();
     FileManager fileManager = new FileManager();
+    HTTPServer serverController = new HTTPServer();
 
     // Stacks used to store Writable Images for undo and redo
     Stack<WritableImage> undoStack = new Stack<>();
@@ -33,15 +41,17 @@ public class HelloController {
     WritableImage selectedImage;
 
     // Declaration of global variables
-    double startX, startY, regionStartX, regionStartY, regionEndX, regionEndY, initialX, initialY;
+    double startX, startY, regionStartX, regionStartY, regionEndX, regionEndY, initialX, initialY, mouseX, mouseY, regionWidth, regionHeight;
     double lineWidth = 1.0;
     double dashes = 0.0;
     int numSides = 5;
     String paintText = "text";
-    private boolean active = false;
+    public boolean active = false;
     boolean imageCut = false;
     boolean selected = false;
-    boolean pasting = false;
+    boolean drawing = false;
+    boolean drawn = false;
+    boolean started = false;
 
     @FXML public BorderPane borderPane;
     @FXML public StackPane stackPane;
@@ -55,29 +65,29 @@ public class HelloController {
 
     @FXML public ColorPicker colorChooser;
 
-    @FXML private ToggleButton dashesToggle;
-    @FXML private ToggleButton filledToggle;
+    @FXML private CheckBox autoSaveToggle;
 
-    @FXML private ToggleButton penToggle;
-    @FXML private ToggleButton eraseToggle;
-    @FXML private ToggleButton textToggle;
-    @FXML private ToggleButton selectToggle;
-    @FXML private ToggleButton lineToggle;
-    @FXML private ToggleButton rectToggle;
-    @FXML private ToggleButton squareToggle;
-    @FXML private ToggleButton triangleToggle;
-    @FXML private ToggleButton rTriangleToggle;
-    @FXML private ToggleButton ovalToggle;
-    @FXML private ToggleButton circleToggle;
-    @FXML private ToggleButton rArrowToggle;
-    @FXML private ToggleButton lArrowToggle;
-    @FXML private ToggleButton dArrowToggle;
-    @FXML private ToggleButton uArrowToggle;
-    @FXML private ToggleButton polygonToggle;
-    @FXML private ToggleButton trapezoidToggle;
+    @FXML private ToggleButton dashesToggle, filledToggle;
+
+    @FXML private ToggleButton penToggle, eraseToggle, textToggle, selectToggle, lineToggle;
+    @FXML private ToggleButton rectToggle, squareToggle, triangleToggle, rTriangleToggle;
+    @FXML private ToggleButton ovalToggle, circleToggle;
+    @FXML private ToggleButton rArrowToggle, lArrowToggle, dArrowToggle, uArrowToggle;
+    @FXML private ToggleButton polygonToggle, trapezoidToggle;
 
     @FXML private Text lineWidthText;
     @FXML private Slider sizeSlider;
+
+    timerHandler myTimerHandler = new timerHandler();
+    Timer autoSaveTimer = new Timer();
+
+    @FXML void enableAutoSave(){
+        // Ensures that multiple timers are not running at once
+        if (!started){
+            autoSaveTimer.scheduleAtFixedRate(myTimerHandler, 1000, 2000);
+            started = true;
+        }
+    }
 
     // Clears the canvas
     @FXML void clearCanvas(){
@@ -133,7 +143,6 @@ public class HelloController {
     @FXML void handleUndo(){
         // Ensures the stack is not empty
         if (!undoStack.isEmpty()){
-            System.out.println("Not empty");
             // Saves the top of the undo stack
             WritableImage undoImage = undoStack.pop();
 
@@ -246,8 +255,9 @@ public class HelloController {
     }
 
     // Action performed by pressing Save menu item
-    @FXML void handleSaveItem() {
+    @FXML public void handleSaveItem() {
         fileManager.saveFile(canvas);
+        uploadFile();
     }
 
     // Action performed by pressing Draw checkbox
@@ -268,11 +278,17 @@ public class HelloController {
             }
         }
 
-        if (source == polygonToggle && source.isSelected()) {
-            setNumSides();
-        }
-        else if (source == textToggle && source.isSelected()) {
-            setPaintText();
+        if (source.isSelected()){
+            if (source == polygonToggle){
+                setNumSides();
+            }
+            else if (source == textToggle){
+                setPaintText();
+            }
+
+            if (source != penToggle && source != eraseToggle && source != selectToggle){
+                drawing = true;
+            }
         }
 
         // Boolean value used to determine if a drawing feature is currently enabled (helps with smart save)
@@ -371,8 +387,8 @@ public class HelloController {
     // Creates a new tab to the tab pane
     @FXML void createNewTab(){
         // Creates the tab and sets its properties
-        Tab newTab = new Tab();
-        newTab.setText("New Tab");
+        PaintTab newTab = new PaintTab();
+        newTab.setText("Untitled Tab");
         newTab.setClosable(true);
 
         // Creates nodes that go into new tab
@@ -399,12 +415,24 @@ public class HelloController {
         newTab.setContent(newAnchorPane);
 
         // Activates when a tab is switched
-        newTab.setOnSelectionChanged(event -> {
-            switchTabs(event);
+        newTab.setOnSelectionChanged(this::switchTabs);
+
+        newTab.setOnCloseRequest(event -> {
+            if (confirmClose()){
+                event.consume();
+            }
         });
 
         // Adds the new tab to the tab pane
         tabPane.getTabs().add(newTab);
+
+        // Sets the new tab to be active
+        tabPane.getSelectionModel().select(newTab);
+    }
+
+    // Allows the user to upload the image file to the server manually
+    @FXML void handleUpload(){
+        uploadFile();
     }
 
     // Actions performed from switching tabs
@@ -501,19 +529,35 @@ public class HelloController {
 
         // Determines the starting position of the mouse
         tempCanvas.setOnMousePressed(event -> {
-            if (!selected) {
+            if (!selected){
                 startX = event.getX();
                 startY = event.getY();
+            }
+            if (selected) {
+                if (event.getX() >= regionStartX && event.getX() <= regionEndX && event.getY() >= regionStartY && event.getY() <= regionEndY) {
+                    System.out.println("in region");
+                    mouseX = event.getX() - startX;
+                    mouseY = event.getY() - startY;
+                }
+                /*else {
+                    selected = false;
+                }*/
             }
         });
 
         tempCanvas.setOnMouseReleased(event -> {
+            System.out.println(selected);
             SetGC(gc);
 
             // Only check saving if an action button is selected
             if (active){
                 fileManager.checkSaving(canvas);
+                fileManager.checkSaving(tabPane);
                 undoStack.push(canvas.snapshot(null, null));
+            }
+
+            if (drawn){
+
             }
 
             // Allows the user to create dots by clicking when in pen or erase mode
@@ -530,16 +574,17 @@ public class HelloController {
             // If a region has been selected, draws the selected region to the canvas at the location of the mouse
             if (selected){
                 selected = false;
-                gc.drawImage(selectedImage, event.getX(), event.getY());
+                gc.drawImage(selectedImage, event.getX() - mouseX, event.getY() - mouseY);
             }
-
             // Special actions performed with the Select feature
-            if (selectToggle.isSelected()){
+            else if (selectToggle.isSelected()){
                 // Determines new coordinates of the selected region
                 regionEndX = event.getX();
                 regionEndY = event.getY();
                 initialX = event.getX();
                 initialY = event.getY();
+                regionWidth = regionEndX - startX;
+                regionHeight = regionEndY - startY;
 
                 // Displays the bounding box on the screen
                 changeCanvas(tempGC, event);
@@ -586,12 +631,23 @@ public class HelloController {
             }
             else changeCanvas(tempGC, event);
 
+            if (drawing){
+                drawn = false;
+            }
+
             // If a region has been selected...
             if (selected){
                 // Shows the selected region actively moving
                 tempGC.clearRect(startX, startY, regionEndX - startX, regionEndY - startY);
-                tempGC.drawImage(selectedImage, event.getX(), event.getY());
+                tempGC.drawImage(selectedImage, event.getX() - mouseX, event.getY() - mouseY);
 
+                /*tempGC.setStroke(Color.LIGHTGRAY);
+                tempGC.setLineDashes(3);
+                tempGC.setLineWidth(2);
+
+                drawer.drawRectangle(tempGC, event.getX() - mouseX, event.getY() - mouseY,
+                        event.getX() + (regionWidth - mouseX), event.getY() + (regionHeight - mouseY), false);
+*/
                 // Clears the original location of the selected region
                 gc.clearRect(startX, startY, initialX - startX, initialY - startY);
 
@@ -671,6 +727,15 @@ public class HelloController {
         }
     }
 
+    /**
+     * Displays an alert asking the user if they want to save their work before closing the application.
+     * <p></p>
+     * The user can choose to Save the current state of the canvas and close the application, Don't Save the
+     * current state of the canvas and close the application, or Cancel closing the application and don't save the
+     * current state of the canvas.
+     * @return a boolean value depending on which button the user selects
+     * @see public void saveFile()
+     */
     // Informs the user if they are about to close the program without saving
     public boolean confirmClose(){
         if (fileManager.needsSaving){
@@ -691,12 +756,12 @@ public class HelloController {
             if (alert.getResult() == save){
                 handleSaveItem();
                 // Still closes the window
-                return true;
+                return false;
             }
             // Closes the window if user selects Don't Save. Keeps it open if user selects Cancel
-            else return alert.getResult() == noSave;
+            else return alert.getResult() != noSave;
         }
-        else return true;
+        else return false;
     }
 
     // Sets the properties of the graphics context
@@ -719,5 +784,53 @@ public class HelloController {
         // Sets the line dashes based on the line width (ensures an attractive ratio)
         // If dashes are disabled, dashes = 0 and the line is solid
         graphicsContext.setLineDashes(lineWidth * dashes);
+    }
+
+    // Starts/creates a HTTP server to show image data
+    public void startServer() throws IOException {
+        serverController.createServer();
+    }
+
+    // Uploads the open image file to the HTTP server
+    private void uploadFile(){
+        try {
+            System.out.println("Uploading file");
+
+            // Identifies the image to upload
+            File serverImageFile = new File(fileManager.openDirectory.getText());
+
+            // Uploads the image to the server
+            serverController.uploadImageToServer(serverImageFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Upload didn't work");
+        }
+    }
+
+    class PaintTab extends Tab{
+        boolean needsSaving;
+
+        PaintTab(){
+            needsSaving = false;
+        }
+
+        public boolean getNeedsSaving(){
+            return needsSaving;
+        }
+
+        public void setNeedsSaving(boolean state){
+            needsSaving = state;
+        }
+    }
+
+    class timerHandler extends TimerTask {
+
+        @Override
+        public void run() {
+            // Saves the canvas when auto save is enabled
+            if (autoSaveToggle.isSelected()){
+                Platform.runLater( () -> handleSaveItem());
+            }
+        }
     }
 }

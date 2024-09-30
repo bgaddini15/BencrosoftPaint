@@ -2,6 +2,9 @@ package com.example.bencrosoftpaint;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.text.Text;
@@ -18,14 +21,23 @@ public class FileManager {
     // Not visible to the user. Text element to store directory address of loaded image.
     // Used so user does not need to reopen the file chooser to save the image.
     // Using a String variable made the program unhappy.
-    Text openDirectory = new Text("none");
+    public Text openDirectory = new Text("none");
+    String fileExtension = "none";
 
     // Global variables
     public Text stageTitle = new Text("Untitled");
     public boolean needsSaving = false;
 
+    /**
+     * Has the user select an image file from a file chooser and displays that image
+     * on a Canvas object. Accepatable file types are .png, .jpg, and .bmp.
+     *
+     * @param canvas The Canvas object to write the image file to
+     */
     // Opens an image file to display to the canvas
     public void openFile(Canvas canvas){
+        TabPane tabPane = (TabPane) canvas.getParent().getParent().getParent().getParent();
+
         // Identifies the main stage of the application
         Stage mainStage = (Stage) canvas.getScene().getWindow();
 
@@ -43,12 +55,16 @@ public class FileManager {
         File file = fileChooser.showOpenDialog(mainStage);
 
         try{
+            fileExtension = file.getName().substring(file.getName().lastIndexOf("."));
+            System.out.println(fileExtension);
+
             // Stores the file path
             String filePath = file.getAbsolutePath();
             openDirectory.setText(filePath);
 
             // Changes the title of the stage to show the file name
             changeTitle(file.getName().substring(0,file.getName().length()-4), canvas);
+            changeTitle(file.getName().substring(0,file.getName().length()-4), tabPane);
 
             // Loads the selected file in the background
             Image loadedImage = new Image("file:" + filePath, 400, 400, true, true);
@@ -73,6 +89,7 @@ public class FileManager {
                 yOffset = (canvas.getHeight() - scaledHeight) / 2.0;
             }
 
+
             // Clears the canvas and displays the loaded image
             GraphicsContext gc = canvas.getGraphicsContext2D();
             gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -84,8 +101,18 @@ public class FileManager {
         }
     }
 
+    /**
+     * Saves the current state of a Canvas object to an already open file location.
+     * If no image file had previously been open, the user is instructed to choose a
+     * file location to save the image file to.
+     *
+     * @param canvas The Canvas object whose current state is being saved
+     * @see public void saveAsFile
+     */
     // Saves the current state of the canvas over an existing image file
     public void saveFile(Canvas canvas){
+        TabPane tabPane = (TabPane) canvas.getParent().getParent().getParent().getParent();
+
         System.out.println("Save");
         if (!Objects.equals(openDirectory.getText(), "none")) {
             // Checks for I/O errors
@@ -101,7 +128,8 @@ public class FileManager {
 
                 // Identifies that the file has been saved
                 needsSaving = false;
-                changeTitle(stageTitle.getText().replace("*", ""), canvas);
+                changeTitle(stageTitle.getText(), canvas);
+                changeTitle(stageTitle.getText(), tabPane);
 
             }
             // Used to check if a file isn't selected to save over
@@ -115,8 +143,17 @@ public class FileManager {
         }
     }
 
+    /**
+     * Saves the current state of a Canvas object to a new image file. The user
+     * is prompted with a dialog box for where the file location of the saved image
+     * should be.
+     *
+     * @param canvas The Canvas object whose current state is being saved
+     */
     // Saves the current state of the canvas to a new image file
     public void saveAsFile(Canvas canvas){
+        TabPane tabPane = (TabPane) canvas.getParent().getParent().getParent().getParent();
+        boolean continueSave = true;
         System.out.println("Save As");
         // Identifies the main stage of the application
         Stage mainStage = (Stage) canvas.getScene().getWindow();
@@ -149,15 +186,36 @@ public class FileManager {
 
             // Ensures a file is selected
             if (!file.getName().equals("null")){
-                stageTitle.setText(file.getName().substring(0,file.getName().length()-4));
+                String selectedExtension = file.getName().substring(file.getName().lastIndexOf("."));
+                System.out.println(file.getName().substring(file.getName().lastIndexOf(".")));
+                if (!(fileExtension.equals("none") || selectedExtension.equals(fileExtension))){
+                    Alert extensionAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                    extensionAlert.setTitle("Confirm Save");
+                    extensionAlert.setHeaderText(null);
+                    extensionAlert.setContentText("Saving as a different file type may corrupt the image data.\n" +
+                            "Do you wish to procede?");
+                    extensionAlert.showAndWait();
+                    if (extensionAlert.getResult() == ButtonType.OK){
+                        continueSave = true;
+                    }
+                    else{
+                        continueSave = false;
+                    }
+                }
 
-                // Image data of the buffered image is written over the new file.
-                ImageIO.write(bufferedImage, "png", file);
+                if (continueSave){
+                    System.out.println("Saved image");
+                    stageTitle.setText(file.getName().substring(0,file.getName().length()-4));
 
-                // Identifies that the file has been saved
-                needsSaving = false;
-                changeTitle(stageTitle.getText().replace("*", ""), canvas);
-                System.out.println("Not null");
+                    // Image data of the buffered image is written over the new file.
+                    ImageIO.write(bufferedImage, "png", file);
+
+                    // Identifies that the file has been saved
+                    needsSaving = false;
+                    fileExtension = selectedExtension;
+                    changeTitle(stageTitle.getText().replace("*", ""), canvas);
+                    changeTitle(stageTitle.getText().replace("*", ""), tabPane);
+                }
             }
             else{
                 System.out.println("File not found");
@@ -173,13 +231,21 @@ public class FileManager {
     // Identifies that changes have been made that need to be saved
     public void checkSaving(Canvas canvas){
         // Ensures only one asterisk is added to the front of the stage title
-        if (!needsSaving){
+        //if (!needsSaving){
             // Changes the stage title
-            stageTitle.setText("*" + stageTitle.getText());
             Stage mainStage = (Stage) canvas.getScene().getWindow();
-            mainStage.setTitle(stageTitle.getText() + " - Bencrosoft Paint");
+            mainStage.setTitle("*" + stageTitle.getText() + " - Bencrosoft Paint");
             needsSaving = true;
-        }
+        //}
+    }
+
+    public void checkSaving(TabPane tabPane){
+        // Ensures only one asterisk is added to the front of the stage title
+        //if (!needsSaving){
+            // Changes the tab title
+            tabPane.getSelectionModel().getSelectedItem().setText("*" + stageTitle.getText());
+            needsSaving = true;
+        //}
     }
 
     // Changes the stage title to indicate
@@ -187,6 +253,11 @@ public class FileManager {
         stageTitle.setText(title);
         Stage mainStage = (Stage) canvas.getScene().getWindow();
         mainStage.setTitle(title + " - Bencrosoft Paint");
+    }
+
+    public void changeTitle(String title, TabPane tabPane){
+        stageTitle.setText(title);
+        tabPane.getSelectionModel().getSelectedItem().setText(title);
     }
 
     // Converts JavaFX image to a buffered image so that ImageIO can work
