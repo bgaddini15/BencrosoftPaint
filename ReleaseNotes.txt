@@ -1,3 +1,29 @@
+Ben Gaddini's Pain(t) Version 1.0.0 - 10/06/2024
+
+New features:
+*Ability to rotate canvas 90, 180, or 270 degrees
+*Ability to rotate selection of canvas 90, 180, or 270 degrees
+*Ability to flip canvas horizontally or vertically
+*Ability to flip selection of canvas horizontally or vertically
+*Added OS notification of AutoSave
+*Ability to draw a star of any number of points
+*Added icons for all tool bar features
+*Improved GUI
+*Program keeps a log of user actions
+
+Known issues:
+*Whenever an image is written to the canvas, it gets blurrier
+*User is not able to specify location of pasted image
+*Saving images in different tabs sometimes does not work correctly
+
+Expected next features:
+*Ability to move a shape after drawing it
+*Ability to move the pasted image
+*Ability to change the font of the drawn text
+*Ability to use a rainbow pen
+
+-------------------------------------------------------------------------------------------------------------------
+
 Ben Gaddini's Pain(t) Version 0.5.0 - 9/29/2024
 
 New features:
