@@ -19,6 +19,7 @@
                    <MenuItem accelerator="Shortcut + Shift + S" mnemonicParsing="false" onAction="#handleSaveAsItem" text="Save As..." />
                <MenuItem accelerator="Shortcut + N" mnemonicParsing="false" onAction="#createNewTab" text="New Tab" />
                <MenuItem mnemonicParsing="false" onAction="#handleUpload" text="Upload" />
+               <CheckMenuItem fx:id="autoSaveToggle" mnemonicParsing="false" onAction="#enableAutoSave" text="AutoSave" />
                </Menu>
                <Menu mnemonicParsing="false" text="Edit">
                <MenuItem mnemonicParsing="false" onAction="#resizeCanvas" text="Resize Canvas..." />
@@ -36,9 +37,15 @@
                </Menu>
            </MenuBar>
            <ToolBar prefHeight="82.0" prefWidth="1400.0">
-               <VBox prefHeight="70.0" prefWidth="100.0">
+               <VBox prefHeight="70.0" prefWidth="80.0">
                    <FlowPane prefHeight="200.0" prefWidth="200.0">
-                       <ToggleButton fx:id="penToggle" mnemonicParsing="false" onAction="#handlePressed" text="Pen">
+                       <ToggleButton fx:id="penToggle" mnemonicParsing="false" onAction="#handlePressed">
+                           <graphic>
+                               <ImageView fitHeight="20.0" fitWidth="20.0">
+                                   <Image url="@ToolIcons/penIcon.png">
+                                   </Image>
+                               </ImageView>
+                           </graphic>
                            <tooltip>
                                <Tooltip text="Pen" />
                            </tooltip>
@@ -46,7 +53,13 @@
                                <Insets bottom="2.0" right="2.0" />
                            </FlowPane.margin>
                        </ToggleButton>
-                       <ToggleButton fx:id="eraseToggle" mnemonicParsing="false" onAction="#handlePressed" text="Erase">
+                       <ToggleButton fx:id="eraseToggle" mnemonicParsing="false" onAction="#handlePressed">
+                           <graphic>
+                               <ImageView fitHeight="20.0" fitWidth="20.0">
+                                   <Image url="@ToolIcons/eraseIcon.png">
+                                   </Image>
+                               </ImageView>
+                           </graphic>
                            <tooltip>
                                <Tooltip text="Erase" />
                            </tooltip>
@@ -57,7 +70,7 @@
                        <ToggleButton fx:id="textToggle" mnemonicParsing="false" onAction="#handlePressed" textAlignment="CENTER">
                            <graphic>
                                <ImageView fitHeight="20.0" fitWidth="20.0">
-                                   <Image url="@textIcon.png">
+                                   <Image url="@ToolIcons/textIcon.png">
                                    </Image>
                                </ImageView>
                            </graphic>
@@ -68,7 +81,13 @@
                                <Insets right="2.0" />
                            </FlowPane.margin>
                        </ToggleButton>
-                       <ToggleButton fx:id="selectToggle" mnemonicParsing="false" onAction="#handlePressed" text="Select">
+                       <ToggleButton fx:id="selectToggle" mnemonicParsing="false" onAction="#handlePressed">
+                           <graphic>
+                               <ImageView fitHeight="20.0" fitWidth="20.0">
+                                   <Image url="@ToolIcons/selectIcon.png">
+                                   </Image>
+                               </ImageView>
+                           </graphic>
                            <tooltip>
                                <Tooltip text="Select" />
                            </tooltip>
@@ -77,20 +96,20 @@
                            </FlowPane.margin>
                        </ToggleButton>
                    </FlowPane>
-                   <Text fill="#464646" strokeType="OUTSIDE" strokeWidth="0.0" text="Tools" translateX="40.0">
+                   <Text fill="#464646" strokeType="OUTSIDE" strokeWidth="0.0" text="Tools" translateX="26.0" translateY="2.0">
                        <font>
                            <Font size="10.0" />
                        </font>
                    </Text>
                </VBox>
             <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="9.0" />
-               <VBox prefHeight="70.0" prefWidth="209.0">
-                   <ScrollPane hbarPolicy="NEVER" prefHeight="52.0" prefWidth="209.0">
+               <VBox maxHeight="-Infinity" minHeight="-Infinity" prefHeight="75.0" prefWidth="209.0">
+                   <ScrollPane hbarPolicy="NEVER" minHeight="-Infinity" prefHeight="58.0" prefWidth="209.0">
                        <FlowPane prefHeight="200.0" prefWidth="200.0">
                            <ToggleButton fx:id="lineToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
                                <graphic>
                                    <ImageView fitHeight="20.0" fitWidth="20.0">
-                                       <Image url="@lineIcon.png">
+                                       <Image url="@ToolIcons/lineIcon.png">
                                        </Image>
                                    </ImageView>
                                </graphic>
@@ -104,7 +123,7 @@
                            <ToggleButton fx:id="rectToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
                                <graphic>
                                    <ImageView fitHeight="20.0" fitWidth="20.0">
-                                       <Image url="@rectangleIcon.png">
+                                       <Image url="@ToolIcons/rectangleIcon.png">
                                        </Image>
                                    </ImageView>
                                </graphic>
@@ -118,7 +137,7 @@
                            <ToggleButton fx:id="squareToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
                                <graphic>
                                    <ImageView fitHeight="20.0" fitWidth="20.0">
-                                       <Image url="@squareIcon.png">
+                                       <Image url="@ToolIcons/squareIcon.png">
                                        </Image>
                                    </ImageView>
                                </graphic>
@@ -132,7 +151,7 @@
                            <ToggleButton fx:id="triangleToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
                                <graphic>
                                    <ImageView fitHeight="20.0" fitWidth="20.0">
-                                       <Image url="@triangleIcon.png">
+                                       <Image url="@ToolIcons/triangleIcon.png">
                                        </Image>
                                    </ImageView>
                                </graphic>
@@ -146,7 +165,7 @@
                            <ToggleButton fx:id="rTriangleToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
                                <graphic>
                                    <ImageView fitHeight="20.0" fitWidth="20.0">
-                                       <Image url="@rightTriangleIcon.png">
+                                       <Image url="@ToolIcons/rightTriangleIcon.png">
                                        </Image>
                                    </ImageView>
                                </graphic>
@@ -160,7 +179,7 @@
                            <ToggleButton fx:id="ovalToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
                                <graphic>
                                    <ImageView fitHeight="20.0" fitWidth="20.0">
-                                       <Image url="@ovalIcon.png">
+                                       <Image url="@ToolIcons/ovalIcon.png">
                                        </Image>
                                    </ImageView>
                                </graphic>
@@ -174,7 +193,7 @@
                            <ToggleButton fx:id="circleToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
                                <graphic>
                                    <ImageView fitHeight="20.0" fitWidth="20.0">
-                                       <Image url="@circleIcon.png">
+                                       <Image url="@ToolIcons/circleIcon.png">
                                        </Image>
                                    </ImageView>
                                </graphic>
@@ -188,7 +207,7 @@
                            <ToggleButton fx:id="rArrowToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
                                <graphic>
                                    <ImageView fitHeight="20.0" fitWidth="20.0">
-                                       <Image url="@rightArrowIcon.png">
+                                       <Image url="@ToolIcons/rightArrowIcon.png">
                                        </Image>
                                    </ImageView>
                                </graphic>
@@ -202,7 +221,7 @@
                            <ToggleButton fx:id="lArrowToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
                                <graphic>
                                    <ImageView fitHeight="20.0" fitWidth="20.0">
-                                       <Image url="@leftArrowIcon.png">
+                                       <Image url="@ToolIcons/leftArrowIcon.png">
                                        </Image>
                                    </ImageView>
                                </graphic>
@@ -216,7 +235,7 @@
                            <ToggleButton fx:id="uArrowToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
                                <graphic>
                                    <ImageView fitHeight="20.0" fitWidth="20.0">
-                                       <Image url="@upArrowIcon.png">
+                                       <Image url="@ToolIcons/upArrowIcon.png">
                                        </Image>
                                    </ImageView>
                                </graphic>
@@ -230,7 +249,7 @@
                            <ToggleButton fx:id="dArrowToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
                                <graphic>
                                    <ImageView fitHeight="20.0" fitWidth="20.0">
-                                       <Image url="@downArrowIcon.png">
+                                       <Image url="@ToolIcons/downArrowIcon.png">
                                        </Image>
                                    </ImageView>
                                </graphic>
@@ -244,7 +263,7 @@
                            <ToggleButton fx:id="polygonToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
                                <graphic>
                                    <ImageView fitHeight="20.0" fitWidth="20.0">
-                                       <Image url="@polygonIcon.png">
+                                       <Image url="@ToolIcons/polygonIcon.png">
                                        </Image>
                                    </ImageView>
                                </graphic>
@@ -255,10 +274,24 @@
                                    <Insets bottom="2.0" right="2.0" top="1.0" />
                                </FlowPane.margin>
                            </ToggleButton>
+                           <ToggleButton fx:id="starToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
+                               <graphic>
+                                   <ImageView fitHeight="20.0" fitWidth="20.0">
+                                       <Image url="@ToolIcons/starIcon.png">
+                                       </Image>
+                                   </ImageView>
+                               </graphic>
+                               <tooltip>
+                                   <Tooltip text="Star" />
+                               </tooltip>
+                               <FlowPane.margin>
+                                   <Insets bottom="2.0" right="2.0" top="1.0" />
+                               </FlowPane.margin>
+                           </ToggleButton>
                            <ToggleButton fx:id="trapezoidToggle" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePressed" prefHeight="25.0" prefWidth="25.0">
                                <graphic>
                                    <ImageView fitHeight="20.0" fitWidth="20.0">
-                                       <Image url="@trapezoidIcon.png">
+                                       <Image url="@ToolIcons/trapezoidIcon.png">
                                        </Image>
                                    </ImageView>
                                </graphic>
@@ -280,32 +313,133 @@
                        </VBox.margin>
                    </Text>
                </VBox>
-            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="9.0" />
-            <ToggleButton fx:id="dashesToggle" mnemonicParsing="false" onAction="#handleDash" text="Dashes" />
-            <ToggleButton fx:id="filledToggle" mnemonicParsing="false" onAction="#handleDash" text="Filled" />
+               <VBox prefHeight="72.0" prefWidth="39.0">
+                   <ToggleButton fx:id="dashesToggle" mnemonicParsing="false" onAction="#handleDash">
+                       <graphic>
+                           <ImageView fitHeight="20.0" fitWidth="20.0">
+                               <Image url="@ToolIcons/dashesIcon.png">
+                               </Image>
+                           </ImageView>
+                       </graphic>
+                       <tooltip>
+                           <Tooltip text="Dashed Line" />
+                       </tooltip>
+                   </ToggleButton>
+                   <ToggleButton fx:id="filledToggle" mnemonicParsing="false" onAction="#handleDash">
+                       <graphic>
+                           <ImageView fitHeight="20.0" fitWidth="20.0">
+                               <Image url="@ToolIcons/fillIcon.png">
+                               </Image>
+                           </ImageView>
+                       </graphic>
+                       <tooltip>
+                           <Tooltip text="Filled Shape" />
+                       </tooltip>
+                   </ToggleButton>
+               </VBox>
 
             <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="9.0" />
-            <Label text="Line Size" />
-            <Slider fx:id="sizeSlider" min="1.0" onMouseClicked="#handleSlider" onMouseDragged="#handleSlider" value="1.0" />
-            <Text fx:id="lineWidthText" strokeType="OUTSIDE" strokeWidth="0.0" text="1px" />
-            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="9.0" />
-               <VBox prefHeight="70.0" prefWidth="125.0">
-                   <ColorPicker fx:id="colorChooser" prefWidth="125.0">
-                       <value>
-                           <Color />
-                       </value>
-                       <VBox.margin>
-                           <Insets top="20.0" />
-                       </VBox.margin>
-                   </ColorPicker>
-                   <Text fill="#464646" strokeType="OUTSIDE" strokeWidth="0.0" text="Color" textAlignment="CENTER" translateX="50.0" translateY="10.0">
+               <VBox prefHeight="35.0" prefWidth="240.0">
+                   <HBox prefHeight="26.0" prefWidth="240.0">
+                       <Label text="Line Size">
+                           <padding>
+                               <Insets right="10.0" />
+                           </padding>
+                       </Label>
+                       <Slider fx:id="sizeSlider" min="1.0" onMouseClicked="#handleSlider" onMouseDragged="#handleSlider" value="1.0">
+                           <padding>
+                               <Insets top="2.0" />
+                           </padding>
+                       </Slider>
+                       <Text fx:id="lineWidthText" strokeType="OUTSIDE" strokeWidth="0.0" text="1px">
+                           <HBox.margin>
+                               <Insets left="2.0" />
+                           </HBox.margin>
+                       </Text>
+                   </HBox>
+                   <HBox prefHeight="36.0" prefWidth="240.0">
+                       <Label alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="45.0" text="Color">
+                           <HBox.margin>
+                               <Insets right="10.0" top="4.0" />
+                           </HBox.margin>
+                       </Label>
+                       <ColorPicker fx:id="colorChooser" prefHeight="25.0" prefWidth="143.0">
+                           <value>
+                               <Color />
+                           </value>
+                       </ColorPicker>
+                   </HBox>
+                   <Text fill="#464646" strokeType="OUTSIDE" strokeWidth="0.0" text="Shape Properties" textAlignment="CENTER" translateX="85.0">
                        <font>
                            <Font size="10.0" />
                        </font>
                    </Text>
                </VBox>
             <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="9.0" />
-            <CheckBox fx:id="autoSaveToggle" mnemonicParsing="false" onAction="#enableAutoSave" text="AutoSave" />
+               <VBox prefHeight="61.0" prefWidth="110.0">
+                   <FlowPane prefHeight="200.0" prefWidth="181.0">
+                       <Button fx:id="rotate90Button" mnemonicParsing="false" onAction="#rotate90">
+                           <graphic>
+                               <ImageView fitHeight="20.0" fitWidth="20.0">
+                                   <Image url="@ToolIcons/rotate90Icon.png">
+                                   </Image>
+                               </ImageView>
+                           </graphic>
+                           <tooltip>
+                               <Tooltip text="Rotate 90 degrees clockwise" />
+                           </tooltip>
+                       </Button>
+                       <Button fx:id="rotate180Button" mnemonicParsing="false" onAction="#rotate180">
+                           <graphic>
+                               <ImageView fitHeight="20.0" fitWidth="20.0">
+                                   <Image url="@ToolIcons/rotate180Icon.png">
+                                   </Image>
+                               </ImageView>
+                           </graphic>
+                           <tooltip>
+                               <Tooltip text="Rotate 180 degrees" />
+                           </tooltip>
+                       </Button>
+                       <Button fx:id="rotate270Button" mnemonicParsing="false" onAction="#rotate270">
+                           <graphic>
+                               <ImageView fitHeight="20.0" fitWidth="20.0">
+                                   <Image url="@ToolIcons/rotate270Icon.png">
+                                   </Image>
+                               </ImageView>
+                           </graphic>
+                           <tooltip>
+                               <Tooltip text="Rotate 90 degrees counterclockwise" />
+                           </tooltip>
+                       </Button>
+                       <Button fx:id="flipVButton" mnemonicParsing="false" onAction="#flipVertically">
+                           <graphic>
+                               <ImageView fitHeight="20.0" fitWidth="20.0">
+                                   <Image url="@ToolIcons/flipVerticalIcon.png">
+                                   </Image>
+                               </ImageView>
+                           </graphic>
+                           <tooltip>
+                               <Tooltip text="Flip vertically" />
+                           </tooltip>
+                       </Button>
+                       <Button fx:id="flipHButton" mnemonicParsing="false" onAction="#flipHorizontally">
+                           <graphic>
+                               <ImageView fitHeight="20.0" fitWidth="20.0">
+                                   <Image url="@ToolIcons/flipHorizontalIcon.png">
+                                   </Image>
+                               </ImageView>
+                           </graphic>
+                           <tooltip>
+                               <Tooltip text="Flip horizontally" />
+                           </tooltip>
+                       </Button>
+                   </FlowPane>
+                   <Text fill="#464646" strokeType="OUTSIDE" strokeWidth="0.0" text="Rotate" translateX="40.0">
+                       <font>
+                           <Font size="10.0" />
+                       </font>
+                   </Text>
+               </VBox>
            </ToolBar>
        </VBox>
    </top>
