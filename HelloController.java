@@ -13,6 +13,10 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -21,17 +25,18 @@ import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.text.Text;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Objects;
-import java.util.Stack;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class HelloController {
     Drawer drawer = new Drawer();
     FileManager fileManager = new FileManager();
     HTTPServer serverController = new HTTPServer();
+    Rotator rotatorController = new Rotator();
 
     // Stacks used to store Writable Images for undo and redo
     Stack<WritableImage> undoStack = new Stack<>();
@@ -39,12 +44,16 @@ public class HelloController {
 
     WritableImage copiedImage;
     WritableImage selectedImage;
+    WritableImage originalImage;
+
+    File log = new File("src\\main\\resources\\PaintLog.txt");
 
     // Declaration of global variables
     double startX, startY, regionStartX, regionStartY, regionEndX, regionEndY, initialX, initialY, mouseX, mouseY, regionWidth, regionHeight;
     double lineWidth = 1.0;
     double dashes = 0.0;
     int numSides = 5;
+    int numPoints = 5;
     String paintText = "text";
     public boolean active = false;
     boolean imageCut = false;
@@ -65,7 +74,10 @@ public class HelloController {
 
     @FXML public ColorPicker colorChooser;
 
-    @FXML private CheckBox autoSaveToggle;
+    @FXML private CheckMenuItem autoSaveToggle;
+
+    @FXML private Button rotate90Button, rotate180Button, rotate270Button;
+    @FXML private Button flipVButton, flipHButton;
 
     @FXML private ToggleButton dashesToggle, filledToggle;
 
@@ -73,13 +85,125 @@ public class HelloController {
     @FXML private ToggleButton rectToggle, squareToggle, triangleToggle, rTriangleToggle;
     @FXML private ToggleButton ovalToggle, circleToggle;
     @FXML private ToggleButton rArrowToggle, lArrowToggle, dArrowToggle, uArrowToggle;
-    @FXML private ToggleButton polygonToggle, trapezoidToggle;
+    @FXML private ToggleButton polygonToggle, starToggle, trapezoidToggle;
 
     @FXML private Text lineWidthText;
     @FXML private Slider sizeSlider;
 
     timerHandler myTimerHandler = new timerHandler();
     Timer autoSaveTimer = new Timer();
+
+    // Rotates the drawing 90 degrees clockwise
+    @FXML void rotate90(){
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+
+        // Rotates the selected image
+        if (selected){
+            rotatorController.rotateImage(gc, selectedImage, 90, startX, startY);
+
+            // Allows the user to keep rotating (don't need to reselect the image)
+            Rectangle2D viewPort = new Rectangle2D(startX, startY, regionEndX - startX, regionEndY - startY);
+            SnapshotParameters params = new SnapshotParameters();
+            params.setViewport(viewPort);
+            selectedImage = canvas.snapshot(params, null);
+        }
+        // Rotates the whole canvas
+        else{
+            originalImage = canvas.snapshot(null, null);
+            rotatorController.rotateImage(gc, originalImage, 90, 0, 0);
+        }
+
+        logData("Image rotate 90 degrees");
+    }
+
+    // Rotates the drawing 180 degrees
+    @FXML void rotate180(){
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        // Rotates the selected image
+        if (selected){
+            rotatorController.rotateImage(gc, selectedImage, 180, startX, startY);
+
+            // Allows the user to keep rotating (don't need to reselect the image)
+            Rectangle2D viewPort = new Rectangle2D(startX, startY, regionEndX - startX, regionEndY - startY);
+            SnapshotParameters params = new SnapshotParameters();
+            params.setViewport(viewPort);
+            selectedImage = canvas.snapshot(params, null);
+        }
+        // Rotates the whole canvas
+        else{
+            originalImage = canvas.snapshot(null, null);
+            rotatorController.rotateImage(gc, originalImage, 180, 0, 0);
+        }
+
+        logData("Image rotate 180 degrees");
+    }
+
+    // Rotates the drawing 90 degrees counterclockwise
+    @FXML void rotate270(){
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        // Rotates the selected image only
+        if (selected){
+            rotatorController.rotateImage(gc, selectedImage, 270, startX, startY);
+
+            // Allows the user to keep rotating (don't need to reselect the image)
+            Rectangle2D viewPort = new Rectangle2D(startX, startY, regionEndX - startX, regionEndY - startY);
+            SnapshotParameters params = new SnapshotParameters();
+            params.setViewport(viewPort);
+            selectedImage = canvas.snapshot(params, null);
+        }
+        // Rotates the whole canvas
+        else{
+            originalImage = canvas.snapshot(null, null);
+            rotatorController.rotateImage(gc, originalImage, 270, 0, 0);
+        }
+
+        logData("Image rotate 270 degrees");
+    }
+
+    // Flips the image vertically
+    @FXML void flipVertically(){
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+
+        // Flips the selected image
+        if (selected){
+            rotatorController.flipImage(gc, selectedImage, Rotator.FLIP_VERTICAL, startX, -startY);
+
+            // Allows the user to keep rotating (don't need to reselect the image)
+            Rectangle2D viewPort = new Rectangle2D(startX, startY, regionEndX - startX, regionEndY - startY);
+            SnapshotParameters params = new SnapshotParameters();
+            params.setViewport(viewPort);
+            selectedImage = canvas.snapshot(params, null);
+        }
+        // Flips the whole canvas
+        else{
+            originalImage = canvas.snapshot(null, null);
+            rotatorController.flipImage(gc, originalImage, Rotator.FLIP_VERTICAL, 0, 0);
+        }
+        logData("Image flipped vertically");
+    }
+
+    // Flips the image horizontally
+    @FXML void flipHorizontally(){
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+
+        // Flips a selected image
+        if (selected){
+            rotatorController.flipImage(gc, selectedImage, Rotator.FLIP_HORIZONTAL, -startX, startY);
+
+            // Allows the user to keep rotating (don't need to reselect the image)
+            Rectangle2D viewPort = new Rectangle2D(startX, startY, regionEndX - startX, regionEndY - startY);
+            SnapshotParameters params = new SnapshotParameters();
+            params.setViewport(viewPort);
+            selectedImage = canvas.snapshot(params, null);
+        }
+        // Flips the whole canvas
+        else{
+            originalImage = canvas.snapshot(null, null);
+            rotatorController.flipImage(gc, originalImage, Rotator.FLIP_HORIZONTAL, 0, 0);
+        }
+
+        logData("Image flipped horizontally");
+    }
 
     @FXML void enableAutoSave(){
         // Ensures that multiple timers are not running at once
@@ -101,6 +225,7 @@ public class HelloController {
         // If the user confirms, clears the canvas
         if (alert.getResult() == ButtonType.OK){
             canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+            logData("Canvas cleared");
         }
     }
 
@@ -112,6 +237,8 @@ public class HelloController {
             SnapshotParameters params = new SnapshotParameters();
             params.setViewport(viewPort);
             copiedImage = canvas.snapshot(params, null);
+
+            logData("Selected image copied");
         }
     }
 
@@ -119,6 +246,8 @@ public class HelloController {
     @FXML void handleCut(){
         handleCopy();
         imageCut = true;
+
+        logData("Selected image cut");
     }
 
     // Pastes the previously copied selected region
@@ -130,6 +259,7 @@ public class HelloController {
             canvas.getGraphicsContext2D().clearRect(startX, startY, regionEndX - startX, regionEndY - startY);
         }
         selected = false;
+        logData("Selected image pasted");
     }
 
     // Erases the content in the selected region
@@ -156,6 +286,8 @@ public class HelloController {
         else {
             canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         }
+
+        logData("Undo triggered");
     }
 
     // Allows the user to redo an action
@@ -172,6 +304,7 @@ public class HelloController {
             canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
             canvas.getGraphicsContext2D().drawImage(redoImage, 0, 0, canvas.getWidth(), canvas.getHeight());
         }
+        logData("Redo triggered");
     }
 
     // Actions performed by the line width slider
@@ -204,6 +337,8 @@ public class HelloController {
 
         // Displays the alert window
         alert.show();
+
+        logData("Help menu item selected");
     }
 
     // Action performed by pressing About menu item
@@ -242,22 +377,27 @@ public class HelloController {
 
         // Displays the alert screen
         alert.show();
+
+        logData("About menu item selected");
     }
 
     // Action performed by pressing Open... menu item
     @FXML void handleOpenItem() {
         fileManager.openFile(canvas);
+        logData("File opened");
     }
 
     // Action performed by pressing Save As... menu item
     @FXML void handleSaveAsItem() {
         fileManager.saveAsFile(canvas);
+        logData("File saved as");
     }
 
     // Action performed by pressing Save menu item
     @FXML public void handleSaveItem() {
         fileManager.saveFile(canvas);
         uploadFile();
+        logData("File saved");
     }
 
     // Action performed by pressing Draw checkbox
@@ -265,7 +405,7 @@ public class HelloController {
         // An array of all the different drawing options
         ToggleButton[] toggleButtons = { penToggle, eraseToggle, textToggle, selectToggle, lineToggle, rectToggle, squareToggle,
                 triangleToggle, rTriangleToggle, ovalToggle, circleToggle, rArrowToggle, lArrowToggle, uArrowToggle, dArrowToggle,
-                polygonToggle, trapezoidToggle };
+                polygonToggle, starToggle, trapezoidToggle };
 
         // Stores the id of which button is pressed
         ToggleButton source = (ToggleButton) e.getSource();
@@ -282,6 +422,9 @@ public class HelloController {
             if (source == polygonToggle){
                 setNumSides();
             }
+            else if (source == starToggle){
+                setNumPoints();
+            }
             else if (source == textToggle){
                 setPaintText();
             }
@@ -289,10 +432,13 @@ public class HelloController {
             if (source != penToggle && source != eraseToggle && source != selectToggle){
                 drawing = true;
             }
+
+            logData(source.getId() + " selected");
         }
 
         // Boolean value used to determine if a drawing feature is currently enabled (helps with smart save)
         active = source.isSelected();
+
     }
 
     // Handles dashes and fill of shapes
@@ -304,11 +450,15 @@ public class HelloController {
         if (source == dashesToggle && source.isSelected()){
             filledToggle.setSelected(false);
             dashes = 2.0;
+
+            logData("Dashes mode selected");
         }
         // If filled button is enabled, disables the dashes button and removes dashes from the line
         else if (source == filledToggle && source.isSelected()){
             dashesToggle.setSelected(false);
             dashes = 0.0;
+
+            logData("Filled mode selected");
         }
         // If neither button is activated, disables dashes
         else{
@@ -366,6 +516,7 @@ public class HelloController {
                 stackPane.setPrefWidth(canvas.getWidth());
                 stackPane.setPrefHeight(canvas.getHeight());
 
+                logData("Canvas resized");
             }
             // Ensures valid input
             catch (NumberFormatException e) {
@@ -428,6 +579,8 @@ public class HelloController {
 
         // Sets the new tab to be active
         tabPane.getSelectionModel().select(newTab);
+
+        logData("New tab created");
     }
 
     // Allows the user to upload the image file to the server manually
@@ -447,6 +600,7 @@ public class HelloController {
             Canvas activeTempCanvas = (Canvas) activeStackPane.getChildren().get(1);
             canvas = activeCanvas;
             tempCanvas = activeTempCanvas;
+            logData("Switched tabs");
         }
     }
 
@@ -479,6 +633,50 @@ public class HelloController {
         // When the button is pressed, sets the text to the user input
         if (alert.getResult() == okay){
             paintText = textField.getText();
+        }
+    }
+
+    // Returns the text of the drawn words
+    public String getPaintText(){
+        return paintText;
+    }
+
+    // Displays an alert box that allows the user to set the number of points for a star
+    private void setNumPoints(){
+        // Creates custom button and label
+        ButtonType okay = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        Label sidesText = new Label("Enter number of points: ");
+
+        // Creates a text field for the user to enter the number of sides
+        TextField textField = new TextField();
+        textField.setText(Integer.toString(numPoints));
+        textField.setPrefWidth(50);
+
+        // Creates a grid pane to organize the alert window
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.add(textField, 1, 0);
+        grid.add(sidesText, 0, 0);
+
+        // Creates an alert and adds the elements to it
+        Alert alert = new Alert(Alert.AlertType.NONE, "Enter number of points:", okay);
+        alert.setTitle("Number of Points in Star");
+        alert.setHeaderText(null);
+        alert.getDialogPane().setContent(grid);
+
+        // Displays the alert
+        alert.showAndWait();
+
+        // When the button is pressed, sets the number of sides to the number inputted by the user
+        if (alert.getResult() == okay){
+            try{
+                numPoints = Integer.parseInt(textField.getText());
+            }
+            // Default number of sides is 5
+            catch (NumberFormatException exception){
+                numPoints = 5;
+            }
         }
     }
 
@@ -521,6 +719,11 @@ public class HelloController {
         }
     }
 
+    // Returns the number of sides of the polygon
+    public int getNumSides(){
+        return numSides;
+    }
+
     // Uses the mouse to draw a line on the canvas
     public void Draw() {
         // Tool used to manipulate the canvas
@@ -529,6 +732,7 @@ public class HelloController {
 
         // Determines the starting position of the mouse
         tempCanvas.setOnMousePressed(event -> {
+            System.out.println("PRESSED");
             if (!selected){
                 startX = event.getX();
                 startY = event.getY();
@@ -539,9 +743,9 @@ public class HelloController {
                     mouseX = event.getX() - startX;
                     mouseY = event.getY() - startY;
                 }
-                /*else {
+                else{
                     selected = false;
-                }*/
+                }
             }
         });
 
@@ -554,10 +758,6 @@ public class HelloController {
                 fileManager.checkSaving(canvas);
                 fileManager.checkSaving(tabPane);
                 undoStack.push(canvas.snapshot(null, null));
-            }
-
-            if (drawn){
-
             }
 
             // Allows the user to create dots by clicking when in pen or erase mode
@@ -703,6 +903,9 @@ public class HelloController {
         else if (polygonToggle.isSelected()){
             drawer.drawPolygon(gc, startX, startY, event.getX(), event.getY(), numSides, filledToggle.isSelected());
         }
+        else if (starToggle.isSelected()){
+            drawer.drawStar(gc, startX, startY, event.getX(), event.getY(), numPoints, filledToggle.isSelected());
+        }
         else if (rArrowToggle.isSelected()){
             drawer.drawRightArrow(gc, startX, startY, event.getX(), event.getY(), filledToggle.isSelected());
         }
@@ -807,6 +1010,17 @@ public class HelloController {
         }
     }
 
+    private void logData(String action){
+        try {
+            Date date = new Date();
+            FileWriter logWriter = new FileWriter(log, true);
+            logWriter.write("\n" + date.toString() + " [" + fileManager.stageTitle.getText() + "] " + action);
+            logWriter.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     class PaintTab extends Tab{
         boolean needsSaving;
 
@@ -829,7 +1043,31 @@ public class HelloController {
         public void run() {
             // Saves the canvas when auto save is enabled
             if (autoSaveToggle.isSelected()){
-                Platform.runLater( () -> handleSaveItem());
+                Platform.runLater( () -> {
+                    // Saves the canvas
+                    handleSaveItem();
+
+                    // Accesses the system tray
+                    SystemTray tray = SystemTray.getSystemTray();
+
+                    Image image = Toolkit.getDefaultToolkit().createImage("icon.png");
+
+                    TrayIcon trayIcon = new TrayIcon(image, "Tray Demo");
+
+                    // Has the system resize the image if needed
+                    trayIcon.setImageAutoSize(true);
+
+                    // Sets tooltip text for the tray icon
+                    trayIcon.setToolTip("Auto Save successful");
+                    try {
+                        tray.add(trayIcon);
+                    } catch (AWTException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    // Displays an OS notification that the project has been autosaved
+                    trayIcon.displayMessage("Project Saved", "Your project has been auto saved", TrayIcon.MessageType.INFO);
+                });
             }
         }
     }

@@ -155,12 +155,6 @@ public class Drawer {
         }
     }
 
-    // Hopefully a future shape, not yet implemented
-    public void drawStar(GraphicsContext gc, double startX, double startY, double endX, double endY, boolean filled) {
-        // What if you get the points of a pentagon using drawPentagon, then draw another pentagon smaller
-        // and rotated to use as the inner points of the star?
-    }
-
     // Draws a trapezoid given a specified start and end positions
     public void drawTrapezoid(GraphicsContext gc, double startX, double startY, double endX, double endY, boolean filled) {
         double width = endX - startX;
@@ -295,6 +289,52 @@ public class Drawer {
         }
         else{
             gc.strokePolygon(xPoints, yPoints, numSides);
+        }
+    }
+
+    // Draws a star of a variable amount of points specified by the user
+    public void drawStar(GraphicsContext gc, double startX, double startY, double endX, double endY, int numPoints, boolean filled) {
+        // What if you get the points of a pentagon using drawPentagon, then draw another pentagon smaller
+        // and rotated to use as the inner points of the star?
+
+        // Determines the width and height of a rectangle specified by starting and ending points
+        double width = Math.abs(endX - startX);
+        double height = Math.abs(endY - startY);
+
+        // Determines the radius of a circle made by the start and end points
+        double radius = Math.min(width, height) / 2.0;
+
+        // Variables used to position the polygon on the canvas
+        double translateX = radius;
+        double translateY = radius;
+
+        // Ensures the polygon is drawn properly depending on which quadrant the end points are relative to the starting points
+        if (endX < startX){
+            translateX = -radius;
+        }
+        if (endY < startY){
+            translateY = -radius;
+        }
+
+        // Arrays used to hold the coordinates of the polygon's vertices
+        double[] xPoints = new double[numPoints * 2];
+        double[] yPoints = new double[numPoints * 2];
+
+        // Math used to determine the vertex coordinates
+        for (int i = 0; i < numPoints; i++) {
+            xPoints[i * 2] = (radius * Math.sin((2 * Math.PI * i) / numPoints)) + startX + translateX;
+            yPoints[i * 2] = -(radius * Math.cos((2 * Math.PI * i) / numPoints)) + startY + translateY;
+
+            xPoints[(i * 2) + 1] = (0.5 * radius * Math.sin((Math.PI / numPoints) + ((2 * Math.PI * i) / numPoints))) + startX + translateX;
+            yPoints[(i * 2) + 1] = -(0.5 * radius * Math.cos((Math.PI / numPoints) + ((2 * Math.PI * i) / numPoints))) + startY + translateY;
+        }
+
+        // Draws the polygon on the canvas
+        if (filled){
+            gc.fillPolygon(xPoints, yPoints, numPoints * 2);
+        }
+        else{
+            gc.strokePolygon(xPoints, yPoints, numPoints * 2);
         }
     }
 
