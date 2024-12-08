@@ -378,7 +378,7 @@
             <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="9.0" />
                <VBox prefHeight="61.0" prefWidth="110.0">
                    <FlowPane prefHeight="200.0" prefWidth="181.0">
-                       <Button fx:id="rotate90Button" mnemonicParsing="false" onAction="#rotate90">
+                       <Button mnemonicParsing="false" onAction="#rotate90">
                            <graphic>
                                <ImageView fitHeight="20.0" fitWidth="20.0">
                                    <Image url="@ToolIcons/rotate90Icon.png">
@@ -389,7 +389,7 @@
                                <Tooltip text="Rotate 90 degrees clockwise" />
                            </tooltip>
                        </Button>
-                       <Button fx:id="rotate180Button" mnemonicParsing="false" onAction="#rotate180">
+                       <Button mnemonicParsing="false" onAction="#rotate180">
                            <graphic>
                                <ImageView fitHeight="20.0" fitWidth="20.0">
                                    <Image url="@ToolIcons/rotate180Icon.png">
@@ -400,7 +400,7 @@
                                <Tooltip text="Rotate 180 degrees" />
                            </tooltip>
                        </Button>
-                       <Button fx:id="rotate270Button" mnemonicParsing="false" onAction="#rotate270">
+                       <Button mnemonicParsing="false" onAction="#rotate270">
                            <graphic>
                                <ImageView fitHeight="20.0" fitWidth="20.0">
                                    <Image url="@ToolIcons/rotate270Icon.png">
@@ -411,7 +411,7 @@
                                <Tooltip text="Rotate 90 degrees counterclockwise" />
                            </tooltip>
                        </Button>
-                       <Button fx:id="flipVButton" mnemonicParsing="false" onAction="#flipVertically">
+                       <Button mnemonicParsing="false" onAction="#flipVertically">
                            <graphic>
                                <ImageView fitHeight="20.0" fitWidth="20.0">
                                    <Image url="@ToolIcons/flipVerticalIcon.png">
@@ -422,7 +422,7 @@
                                <Tooltip text="Flip vertically" />
                            </tooltip>
                        </Button>
-                       <Button fx:id="flipHButton" mnemonicParsing="false" onAction="#flipHorizontally">
+                       <Button mnemonicParsing="false" onAction="#flipHorizontally">
                            <graphic>
                                <ImageView fitHeight="20.0" fitWidth="20.0">
                                    <Image url="@ToolIcons/flipHorizontalIcon.png">
