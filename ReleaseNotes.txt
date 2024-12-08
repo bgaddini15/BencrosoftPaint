@@ -1,3 +1,6 @@
+GitHub link: https://github.com/bgaddini15/BencrosoftPaint
+Demo video:  https://youtu.be/oamyEtqhf9E
+
 Ben Gaddini's Pain(t) Version 1.0.0 - 10/06/2024
 
 New features:
