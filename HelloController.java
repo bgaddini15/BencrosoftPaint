@@ -1,7 +1,5 @@
 package com.example.bencrosoftpaint;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -13,7 +11,6 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -25,14 +22,12 @@ import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.text.Text;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class HelloController {
+    // Used classes
     Drawer drawer = new Drawer();
     FileManager fileManager = new FileManager();
     HTTPServer serverController = new HTTPServer();
@@ -42,14 +37,17 @@ public class HelloController {
     Stack<WritableImage> undoStack = new Stack<>();
     Stack<WritableImage> redoStack = new Stack<>();
 
+    // Variables for copy/paste
     WritableImage copiedImage;
     WritableImage selectedImage;
     WritableImage originalImage;
 
+    // Log file
     File log = new File("src\\main\\resources\\PaintLog.txt");
 
     // Declaration of global variables
-    double startX, startY, regionStartX, regionStartY, regionEndX, regionEndY, initialX, initialY, mouseX, mouseY, regionWidth, regionHeight;
+    double startX, startY, regionStartX, regionStartY, regionEndX, regionEndY,
+            initialX, initialY, mouseX, mouseY, regionWidth, regionHeight;
     double lineWidth = 1.0;
     double dashes = 0.0;
     int numSides = 5;
@@ -58,39 +56,35 @@ public class HelloController {
     public boolean active = false;
     boolean imageCut = false;
     boolean selected = false;
-    boolean drawing = false;
-    boolean drawn = false;
     boolean started = false;
 
+    // GUI containers
     @FXML public BorderPane borderPane;
     @FXML public StackPane stackPane;
     @FXML private TabPane tabPane;
 
+    // Canvas variables
     @FXML public Canvas openTempCanvas;
     @FXML private Canvas openCanvas;
-
     public Canvas tempCanvas = openTempCanvas;
     private Canvas canvas = openCanvas;
 
+    // Miscellaneous GUI elements
     @FXML public ColorPicker colorChooser;
-
+    @FXML private Text lineWidthText;
+    @FXML private Slider sizeSlider;
     @FXML private CheckMenuItem autoSaveToggle;
 
-    @FXML private Button rotate90Button, rotate180Button, rotate270Button;
-    @FXML private Button flipVButton, flipHButton;
-
+    // Action buttons
     @FXML private ToggleButton dashesToggle, filledToggle;
-
     @FXML private ToggleButton penToggle, eraseToggle, textToggle, selectToggle, lineToggle;
     @FXML private ToggleButton rectToggle, squareToggle, triangleToggle, rTriangleToggle;
     @FXML private ToggleButton ovalToggle, circleToggle;
     @FXML private ToggleButton rArrowToggle, lArrowToggle, dArrowToggle, uArrowToggle;
     @FXML private ToggleButton polygonToggle, starToggle, trapezoidToggle;
 
-    @FXML private Text lineWidthText;
-    @FXML private Slider sizeSlider;
-
-    timerHandler myTimerHandler = new timerHandler();
+    // Variables for autosaving
+    TimerHandler myTimerHandler = new TimerHandler();
     Timer autoSaveTimer = new Timer();
 
     // Rotates the drawing 90 degrees clockwise
@@ -205,6 +199,7 @@ public class HelloController {
         logData("Image flipped horizontally");
     }
 
+    // Enables the current project to save automatically
     @FXML void enableAutoSave(){
         // Ensures that multiple timers are not running at once
         if (!started){
@@ -244,7 +239,10 @@ public class HelloController {
 
     // Cuts the selected region
     @FXML void handleCut(){
+        // Copies the image
         handleCopy();
+
+        // Used to know if the original image should be removed (cut)
         imageCut = true;
 
         logData("Selected image cut");
@@ -252,6 +250,7 @@ public class HelloController {
 
     // Pastes the previously copied selected region
     @FXML void handlePaste(){
+        // Displays the copied image on the canvas
         canvas.getGraphicsContext2D().drawImage(copiedImage, 10, 10, regionEndX - startX, regionEndY - startY);
 
         // Removes the original image if a cut was performed
@@ -418,6 +417,7 @@ public class HelloController {
             }
         }
 
+        // Calls different functions depending on if certain buttons are pressed
         if (source.isSelected()){
             if (source == polygonToggle){
                 setNumSides();
@@ -427,10 +427,6 @@ public class HelloController {
             }
             else if (source == textToggle){
                 setPaintText();
-            }
-
-            if (source != penToggle && source != eraseToggle && source != selectToggle){
-                drawing = true;
             }
 
             logData(source.getId() + " selected");
@@ -538,7 +534,7 @@ public class HelloController {
     // Creates a new tab to the tab pane
     @FXML void createNewTab(){
         // Creates the tab and sets its properties
-        PaintTab newTab = new PaintTab();
+        Tab newTab = new Tab();
         newTab.setText("Untitled Tab");
         newTab.setClosable(true);
 
@@ -567,12 +563,6 @@ public class HelloController {
 
         // Activates when a tab is switched
         newTab.setOnSelectionChanged(this::switchTabs);
-
-        newTab.setOnCloseRequest(event -> {
-            if (confirmClose()){
-                event.consume();
-            }
-        });
 
         // Adds the new tab to the tab pane
         tabPane.getTabs().add(newTab);
@@ -634,11 +624,6 @@ public class HelloController {
         if (alert.getResult() == okay){
             paintText = textField.getText();
         }
-    }
-
-    // Returns the text of the drawn words
-    public String getPaintText(){
-        return paintText;
     }
 
     // Displays an alert box that allows the user to set the number of points for a star
@@ -719,44 +704,46 @@ public class HelloController {
         }
     }
 
-    // Returns the number of sides of the polygon
-    public int getNumSides(){
-        return numSides;
-    }
-
     // Uses the mouse to draw a line on the canvas
     public void Draw() {
         // Tool used to manipulate the canvas
         GraphicsContext gc = canvas.getGraphicsContext2D();
         GraphicsContext tempGC = tempCanvas.getGraphicsContext2D();
 
-        // Determines the starting position of the mouse
+        // When the mouse is pressed...
         tempCanvas.setOnMousePressed(event -> {
-            System.out.println("PRESSED");
+            // Stores the starting position of the mouse
             if (!selected){
                 startX = event.getX();
                 startY = event.getY();
             }
-            if (selected) {
+            // If in select mode...
+            else {
+                // Determines if mouse is pressed within the selection box
                 if (event.getX() >= regionStartX && event.getX() <= regionEndX && event.getY() >= regionStartY && event.getY() <= regionEndY) {
-                    System.out.println("in region");
+                    // Stores position of the mouse
                     mouseX = event.getX() - startX;
                     mouseY = event.getY() - startY;
                 }
+                // If the mouse is pressed outside of the selection box...
                 else{
+                    // Deselect the area
                     selected = false;
                 }
             }
         });
 
+        // When the mouse is released...
         tempCanvas.setOnMouseReleased(event -> {
-            System.out.println(selected);
+            // Set the properties of the graphics context
             SetGC(gc);
 
             // Only check saving if an action button is selected
             if (active){
                 fileManager.checkSaving(canvas);
                 fileManager.checkSaving(tabPane);
+
+                // Store the action in the undo stack
                 undoStack.push(canvas.snapshot(null, null));
             }
 
@@ -799,8 +786,12 @@ public class HelloController {
                 selected = true;
                 selectToggle.setSelected(false);
             }
+            // If not related to select
             else {
+                // Puts the display of the temp canvas to the main canvas
                 changeCanvas(gc, event);
+
+                // Clears the temp canvas
                 tempGC.clearRect(0, 0, tempCanvas.getWidth(), tempCanvas.getHeight());
             }
 
@@ -808,7 +799,10 @@ public class HelloController {
 
         // Checks for dragging of the mouse on the canvas
         tempCanvas.setOnMouseDragged(event -> {
+            // Continuously clears the temp canvas to show live draw
             tempGC.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+            // Sets the properties of the temp canvas's graphics context
             SetGC(tempGC);
 
             // Determines if draw or erase mode is selected
@@ -829,11 +823,8 @@ public class HelloController {
                 startX = event.getX();
                 startY = event.getY();
             }
+            // Draws the shape to the temp canvas
             else changeCanvas(tempGC, event);
-
-            if (drawing){
-                drawn = false;
-            }
 
             // If a region has been selected...
             if (selected){
@@ -841,13 +832,6 @@ public class HelloController {
                 tempGC.clearRect(startX, startY, regionEndX - startX, regionEndY - startY);
                 tempGC.drawImage(selectedImage, event.getX() - mouseX, event.getY() - mouseY);
 
-                /*tempGC.setStroke(Color.LIGHTGRAY);
-                tempGC.setLineDashes(3);
-                tempGC.setLineWidth(2);
-
-                drawer.drawRectangle(tempGC, event.getX() - mouseX, event.getY() - mouseY,
-                        event.getX() + (regionWidth - mouseX), event.getY() + (regionHeight - mouseY), false);
-*/
                 // Clears the original location of the selected region
                 gc.clearRect(startX, startY, initialX - startX, initialY - startY);
 
@@ -860,9 +844,11 @@ public class HelloController {
             }
         });
 
+        // If the mouse moves over the canvas...
         tempCanvas.setOnMouseMoved(event -> {
             // Displays the width and color of the pen/eraser over the cursor even when no draw is being performed
             if (penToggle.isSelected() || eraseToggle.isSelected()){
+                // Uses the temp canvas to "live draw" the cursor
                 tempGC.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
                 SetGC(tempGC);
                 if (eraseToggle.isSelected()){
@@ -975,8 +961,6 @@ public class HelloController {
         // Sets the color to that of the color picker
         graphicsContext.setStroke(colorChooser.getValue());
         graphicsContext.setFill(colorChooser.getValue());
-        //gc.setFill(Color.TRANSPARENT);
-        // TODO: allow fill color to be different from line color
 
         // Makes sure the line is rounded (removes jagged edges)
         graphicsContext.setLineCap(StrokeLineCap.ROUND);
@@ -1005,42 +989,32 @@ public class HelloController {
             // Uploads the image to the server
             serverController.uploadImageToServer(serverImageFile);
         } catch (Exception e) {
-            e.printStackTrace();
             System.out.println("Upload didn't work");
         }
     }
 
+    // Stores a log of user actions
     private void logData(String action){
         try {
+            // Stores the current date and time
             Date date = new Date();
+
+            // Creates a tool to write to the file
             FileWriter logWriter = new FileWriter(log, true);
-            logWriter.write("\n" + date.toString() + " [" + fileManager.stageTitle.getText() + "] " + action);
+
+            // Writes the date, file edited, and action to the log
+            logWriter.write("\n" + date + " [" + fileManager.stageTitle.getText() + "] " + action);
+
             logWriter.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    class PaintTab extends Tab{
-        boolean needsSaving;
+    // Threading used for timing interval between autosaves
+    class TimerHandler extends TimerTask {
 
-        PaintTab(){
-            needsSaving = false;
-        }
-
-        public boolean getNeedsSaving(){
-            return needsSaving;
-        }
-
-        public void setNeedsSaving(boolean state){
-            needsSaving = state;
-        }
-    }
-
-    class timerHandler extends TimerTask {
-
-        @Override
-        public void run() {
+        @Override public void run() {
             // Saves the canvas when auto save is enabled
             if (autoSaveToggle.isSelected()){
                 Platform.runLater( () -> {

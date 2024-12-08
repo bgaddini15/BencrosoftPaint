@@ -36,6 +36,7 @@ public class FileManager {
      */
     // Opens an image file to display to the canvas
     public void openFile(Canvas canvas){
+        // Accesses the tab pane from the canvas
         TabPane tabPane = (TabPane) canvas.getParent().getParent().getParent().getParent();
 
         // Identifies the main stage of the application
@@ -55,8 +56,8 @@ public class FileManager {
         File file = fileChooser.showOpenDialog(mainStage);
 
         try{
+            // Determines the type of image file
             fileExtension = file.getName().substring(file.getName().lastIndexOf("."));
-            System.out.println(fileExtension);
 
             // Stores the file path
             String filePath = file.getAbsolutePath();
@@ -111,9 +112,9 @@ public class FileManager {
      */
     // Saves the current state of the canvas over an existing image file
     public void saveFile(Canvas canvas){
+        // Accesses the tab pane from the canvas
         TabPane tabPane = (TabPane) canvas.getParent().getParent().getParent().getParent();
 
-        System.out.println("Save");
         if (!Objects.equals(openDirectory.getText(), "none")) {
             // Checks for I/O errors
             try {
@@ -146,17 +147,21 @@ public class FileManager {
     /**
      * Saves the current state of a Canvas object to a new image file. The user
      * is prompted with a dialog box for where the file location of the saved image
-     * should be.
+     * should be. If a file is already open and is saved in a different file format,
+     * the user is warned of potential corruption and asked to confirm save.
      *
      * @param canvas The Canvas object whose current state is being saved
      */
     // Saves the current state of the canvas to a new image file
     public void saveAsFile(Canvas canvas){
+        // Accesses the tab pane from the canvas
         TabPane tabPane = (TabPane) canvas.getParent().getParent().getParent().getParent();
-        boolean continueSave = true;
-        System.out.println("Save As");
+
         // Identifies the main stage of the application
         Stage mainStage = (Stage) canvas.getScene().getWindow();
+
+        // Used for confirm save
+        boolean continueSave = true;
 
         // Checks for I/O errors
         try {
@@ -187,22 +192,21 @@ public class FileManager {
             // Ensures a file is selected
             if (!file.getName().equals("null")){
                 String selectedExtension = file.getName().substring(file.getName().lastIndexOf("."));
-                System.out.println(file.getName().substring(file.getName().lastIndexOf(".")));
+
+                // Alerts the user if trying to save as a different file type
                 if (!(fileExtension.equals("none") || selectedExtension.equals(fileExtension))){
                     Alert extensionAlert = new Alert(Alert.AlertType.CONFIRMATION);
                     extensionAlert.setTitle("Confirm Save");
                     extensionAlert.setHeaderText(null);
                     extensionAlert.setContentText("Saving as a different file type may corrupt the image data.\n" +
                             "Do you wish to procede?");
+
+                    // Has user confirm save
                     extensionAlert.showAndWait();
-                    if (extensionAlert.getResult() == ButtonType.OK){
-                        continueSave = true;
-                    }
-                    else{
-                        continueSave = false;
-                    }
+                    continueSave = extensionAlert.getResult() == ButtonType.OK;
                 }
 
+                // If save confirmed, save image
                 if (continueSave){
                     System.out.println("Saved image");
                     stageTitle.setText(file.getName().substring(0,file.getName().length()-4));
@@ -228,33 +232,54 @@ public class FileManager {
         }
     }
 
+    /**
+     * Changes the title of the scene to identify that changes have been made.
+     * Should generally only be called if changes have been made to the canvas.
+     *
+     * @param canvas The Canvas object that was altered
+     */
     // Identifies that changes have been made that need to be saved
     public void checkSaving(Canvas canvas){
-        // Ensures only one asterisk is added to the front of the stage title
-        //if (!needsSaving){
-            // Changes the stage title
-            Stage mainStage = (Stage) canvas.getScene().getWindow();
-            mainStage.setTitle("*" + stageTitle.getText() + " - Bencrosoft Paint");
-            needsSaving = true;
-        //}
+        // Changes the stage title
+        Stage mainStage = (Stage) canvas.getScene().getWindow();
+        mainStage.setTitle("*" + stageTitle.getText() + " - Bencrosoft Paint");
+        needsSaving = true;
     }
 
+    /**
+     * Changes the title of the tab to identify that changes have been made.
+     * Should generally only be called if changes have been made.
+     *
+     * @param tabPane The TabPane object that was altered
+     */
     public void checkSaving(TabPane tabPane){
-        // Ensures only one asterisk is added to the front of the stage title
-        //if (!needsSaving){
-            // Changes the tab title
-            tabPane.getSelectionModel().getSelectedItem().setText("*" + stageTitle.getText());
-            needsSaving = true;
-        //}
+        // Changes the tab title
+        tabPane.getSelectionModel().getSelectedItem().setText("*" + stageTitle.getText());
+        needsSaving = true;
     }
 
-    // Changes the stage title to indicate
+    /**
+     * Changes the title of the scene to represent a specific text. The scene
+     * is found by using a Canvas object attached to the scene. The text
+     * is followed by " - Bencrosoft Paint" to also identify the program.
+     *
+     * @param title A string to set the title to
+     * @param canvas The canvas that belongs to the scene
+     */
+    // Changes the stage title to indicate current file
     public void changeTitle(String title, Canvas canvas){
         stageTitle.setText(title);
         Stage mainStage = (Stage) canvas.getScene().getWindow();
         mainStage.setTitle(title + " - Bencrosoft Paint");
     }
 
+    /**
+     * Changes the title of a tab to represent a specific text.
+     *
+     * @param title A string to set the tab title to
+     * @param tabPane The TabPane object whose tab title is being changed
+     */
+    // Changes the tab title to indicate current file
     public void changeTitle(String title, TabPane tabPane){
         stageTitle.setText(title);
         tabPane.getSelectionModel().getSelectedItem().setText(title);

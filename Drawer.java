@@ -5,11 +5,30 @@ import javafx.scene.text.Font;
 
 public class Drawer {
 
+    /**
+     * Draws a straight line on a Canvas object from one point to another point.
+     *
+     * @param gc The Graphics Context of the Canvas object
+     * @param startX Starting x-coordinate of the line
+     * @param startY Starting y-coordinate of the line
+     * @param endX Ending x-coordinate of the line
+     * @param endY Ending y-coordinate of the line
+     */
     // Draws a line from the starting position to the ending position
     public void drawLine(GraphicsContext gc, double startX, double startY, double endX, double endY) {
         gc.strokeLine(startX, startY, endX, endY);
     }
 
+    /**
+     * Draws a rectangle on a Canvas object from one point to another point.
+     *
+     * @param gc The Graphics Context of the Canvas object
+     * @param startX Starting x-coordinate of the rectangle
+     * @param startY Starting y-coordinate of the rectangle
+     * @param endX Ending x-coordinate of the rectangle
+     * @param endY Ending y-coordinate of the rectangle
+     * @param filled Specifies if the rectangle should be filled in
+     */
     // Draws a rectangle with points determined by start and end positions
     public void drawRectangle(GraphicsContext gc, double startX, double startY, double endX, double endY, boolean filled) {
         double[] xPoints = {startX, startX, endX, endX};
@@ -23,6 +42,17 @@ public class Drawer {
         }
     }
 
+    /**
+     * Draws a square on a Canvas object from one point to another point. If the starting and ending points
+     * do not form a square, the shortest side length is used to draw the square.
+     *
+     * @param gc The Graphics Context of the Canvas object
+     * @param startX Starting x-coordinate of the square
+     * @param startY Starting y-coordinate of the square
+     * @param endX Ending x-coordinate of the square
+     * @param endY Ending y-coordinate of the square
+     * @param filled Specifies if the square should be filled in
+     */
     // Draws a square based on specified start and end positions
     public void drawSquare(GraphicsContext gc, double startX, double startY, double endX, double endY, boolean filled) {
         double[] xPoints;
@@ -64,6 +94,17 @@ public class Drawer {
         }
     }
 
+    /**
+     * Draws an isosceles triangle on a Canvas object. The triangle is inscribed in a box
+     * of specified coordinates. The triangle will always have the congruent legs pointing up or down.
+     *
+     * @param gc The Graphics Context of the Canvas object
+     * @param startX Starting x-coordinate of the inscribed box
+     * @param startY Starting y-coordinate of the inscribed box
+     * @param endX Ending x-coordinate of the inscribed box
+     * @param endY Ending y-coordinate of the inscribed box
+     * @param filled Specifies if the triangle should be filled in
+     */
     // Draws an isosceles triangle based on specified start and end positions
     public void drawTriangle(GraphicsContext gc, double startX, double startY, double endX, double endY, boolean filled) {
         // Determines the x-points of the triangle to have one half-way between the others
@@ -81,6 +122,17 @@ public class Drawer {
         }
     }
 
+    /**
+     * Draws a right triangle on a Canvas object. The triangle is inscribed in a box
+     * of specified coordinates. The start and end points identify the hypotenuse
+     *
+     * @param gc The Graphics Context of the Canvas object
+     * @param startX Starting x-coordinate of the inscribed box
+     * @param startY Starting y-coordinate of the inscribed box
+     * @param endX Ending x-coordinate of the inscribed box
+     * @param endY Ending y-coordinate of the inscribed box
+     * @param filled Specifies if the triangle should be filled in
+     */
     // Draws a right triangle with the start and end positions marking the hypotenuse
     public void drawRightTriangle(GraphicsContext gc, double startX, double startY, double endX, double endY, boolean filled){
         // Determines x points of right triangle
@@ -98,6 +150,16 @@ public class Drawer {
         }
     }
 
+    /**
+     * Draws an oval on a Canvas object. The oval is inscribed in a box of specified coordinates.
+     *
+     * @param gc The Graphics Context of the Canvas object
+     * @param startX Starting x-coordinate of the inscribed box
+     * @param startY Starting y-coordinate of the inscribed box
+     * @param endX Ending x-coordinate of the inscribed box
+     * @param endY Ending y-coordinate of the inscribed box
+     * @param filled Specifies if the oval should be filled in
+     */
     // Draws an oval based on specified start and end positions
     public void drawOval(GraphicsContext gc, double startX, double startY, double endX, double endY, boolean filled) {
         double width = Math.abs(endX - startX);
@@ -114,6 +176,17 @@ public class Drawer {
         }
     }
 
+    /**
+     * Draws a circle on a Canvas object. The circle is inscribed in a box of specified coordinates.
+     * If the starting and ending points of the box do not form a square, the shortest side length is used to draw the circle.
+     *
+     * @param gc The Graphics Context of the Canvas object
+     * @param startX Starting x-coordinate of the inscribed box
+     * @param startY Starting y-coordinate of the inscribed box
+     * @param endX Ending x-coordinate of the inscribed box
+     * @param endY Ending y-coordinate of the inscribed box
+     * @param filled Specifies if the circle should be filled in
+     */
     // Draws a circle based on specified start and end positions
     public void drawCircle(GraphicsContext gc, double startX, double startY, double endX, double endY, boolean filled) {
         double ovalX, ovalY;
@@ -155,6 +228,17 @@ public class Drawer {
         }
     }
 
+    /**
+     * Draws an isosceles trapezoid on a Canvas object. The trapezoid is inscribed in a box of specified coordinates.
+     * The congruent legs of the trapezoid always point up or down.
+     *
+     * @param gc The Graphics Context of the Canvas object
+     * @param startX Starting x-coordinate of the inscribed box
+     * @param startY Starting y-coordinate of the inscribed box
+     * @param endX Ending x-coordinate of the inscribed box
+     * @param endY Ending y-coordinate of the inscribed box
+     * @param filled Specifies if the trapezoid should be filled in
+     */
     // Draws a trapezoid given a specified start and end positions
     public void drawTrapezoid(GraphicsContext gc, double startX, double startY, double endX, double endY, boolean filled) {
         double width = endX - startX;
@@ -170,6 +254,16 @@ public class Drawer {
         }
     }
 
+    /**
+     * Draws an arrow pointing right on a Canvas object. The arrow is inscribed in a box of specified coordinates.
+     *
+     * @param gc The Graphics Context of the Canvas object
+     * @param startX Starting x-coordinate of the inscribed box
+     * @param startY Starting y-coordinate of the inscribed box
+     * @param endX Ending x-coordinate of the inscribed box
+     * @param endY Ending y-coordinate of the inscribed box
+     * @param filled Specifies if the arrow should be filled in
+     */
     // Draws an arrow pointing right based on specified start and end positions
     public void drawRightArrow(GraphicsContext gc, double startX, double startY, double endX, double endY, boolean filled) {
         double arrowXStart = Math.min(endX, startX);
@@ -191,6 +285,16 @@ public class Drawer {
         }
     }
 
+    /**
+     * Draws an arrow pointing left on a Canvas object. The arrow is inscribed in a box of specified coordinates.
+     *
+     * @param gc The Graphics Context of the Canvas object
+     * @param startX Starting x-coordinate of the inscribed box
+     * @param startY Starting y-coordinate of the inscribed box
+     * @param endX Ending x-coordinate of the inscribed box
+     * @param endY Ending y-coordinate of the inscribed box
+     * @param filled Specifies if the arrow should be filled in
+     */
     // Draws an arrow pointing left based on specified start and end positions
     public void drawLeftArrow(GraphicsContext gc, double startX, double startY, double endX, double endY, boolean filled) {
         double arrowXStart = Math.max(endX, startX);
@@ -212,6 +316,16 @@ public class Drawer {
         }
     }
 
+    /**
+     * Draws an arrow pointing up on a Canvas object. The arrow is inscribed in a box of specified coordinates.
+     *
+     * @param gc The Graphics Context of the Canvas object
+     * @param startX Starting x-coordinate of the inscribed box
+     * @param startY Starting y-coordinate of the inscribed box
+     * @param endX Ending x-coordinate of the inscribed box
+     * @param endY Ending y-coordinate of the inscribed box
+     * @param filled Specifies if the arrow should be filled in
+     */
     // Draws an arrow pointing up based on specified start and end positions
     public void drawUpArrow(GraphicsContext gc, double startX, double startY, double endX, double endY, boolean filled) {
         double arrowYStart = Math.max(endY, startY);
@@ -232,6 +346,16 @@ public class Drawer {
         }
     }
 
+    /**
+     * Draws an arrow pointing down on a Canvas object. The arrow is inscribed in a box of specified coordinates.
+     *
+     * @param gc The Graphics Context of the Canvas object
+     * @param startX Starting x-coordinate of the inscribed box
+     * @param startY Starting y-coordinate of the inscribed box
+     * @param endX Ending x-coordinate of the inscribed box
+     * @param endY Ending y-coordinate of the inscribed box
+     * @param filled Specifies if the arrow should be filled in
+     */
     // Draws an arrow pointing down based on specified start and end positions
     public void drawDownArrow(GraphicsContext gc, double startX, double startY, double endX, double endY, boolean filled) {
         double arrowYStart = Math.min(endY, startY);
@@ -252,6 +376,18 @@ public class Drawer {
         }
     }
 
+    /**
+     * Draws a regular polygon of a specified number of sides on a Canvas object.
+     * The polygon is inscribed in a box of specified coordinates.
+     *
+     * @param gc The Graphics Context of the Canvas object
+     * @param startX Starting x-coordinate of the inscribed box
+     * @param startY Starting y-coordinate of the inscribed box
+     * @param endX Ending x-coordinate of the inscribed box
+     * @param endY Ending y-coordinate of the inscribed box
+     * @param numSides The number of sides of the polygon
+     * @param filled Specifies if the polygon should be filled in
+     */
     // Draws a regular polygon of a variable number of sides
     public void drawPolygon(GraphicsContext gc, double startX, double startY, double endX, double endY, int numSides, boolean filled) {
         // Determines the width and height of a rectangle specified by starting and ending points
@@ -292,6 +428,18 @@ public class Drawer {
         }
     }
 
+    /**
+     * Draws a star of a specified number of points on a Canvas object.
+     * The star is inscribed in a box of specified coordinates.
+     *
+     * @param gc The Graphics Context of the Canvas object
+     * @param startX Starting x-coordinate of the inscribed box
+     * @param startY Starting y-coordinate of the inscribed box
+     * @param endX Ending x-coordinate of the inscribed box
+     * @param endY Ending y-coordinate of the inscribed box
+     * @param numPoints The number of points of the star
+     * @param filled Specifies if the star should be filled in
+     */
     // Draws a star of a variable amount of points specified by the user
     public void drawStar(GraphicsContext gc, double startX, double startY, double endX, double endY, int numPoints, boolean filled) {
         // What if you get the points of a pentagon using drawPentagon, then draw another pentagon smaller
@@ -338,6 +486,18 @@ public class Drawer {
         }
     }
 
+    /**
+     * Draws specified text on a Canvas object. The text is inscribed in a box of specified coordinates.
+     *
+     * @param gc The Graphics Context of the Canvas object
+     * @param startX Starting x-coordinate of the inscribed box
+     * @param startY Starting y-coordinate of the inscribed box
+     * @param endX Ending x-coordinate of the inscribed box
+     * @param endY Ending y-coordinate of the inscribed box
+     * @param text The text to be drawn
+     * @param filled Specifies if the text should be filled in
+     */
+    // Draws text specified by the user based on inputted start and end position
     public void drawText(GraphicsContext gc, double startX, double startY, double endX, double endY, String text, boolean filled) {
         Font newFont = new Font(Math.abs(endY - startY));
         gc.setFont(newFont);

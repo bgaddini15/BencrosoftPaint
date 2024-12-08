@@ -12,7 +12,6 @@ import java.nio.file.Files;
 
 public class HTTPServer {
     private static File currentImage = new File("uploaded_image.jpg");  // Image file path
-    private static final File defaultImage = new File("default_image.jpg");  // Default blank image path
 
     // Creates the HTTP Server
     public void createServer() throws IOException {
@@ -29,7 +28,7 @@ public class HTTPServer {
     }
 
     // Reset the current image to a default image (or blank image)
-    private static void resetToDefaultImage() throws IOException {
+    private static void resetToDefaultImage() {
         currentImage.delete();
 
     }
